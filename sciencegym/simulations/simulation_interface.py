@@ -1,27 +1,28 @@
 import numpy as np
-from gymnasium import spaces
+from gym import spaces
+import gym
 
-class SimulationInterface:
+class SimulationInterface(gym.Env):
 
     def __init__(self):
         pass
 
-    def step(self):
+    def step(self, action):
         raise NotImplementedError()
 
-    def current_state(self) -> spaces.Space:
+    def current_state(self) -> gym.spaces.Space:
         '''
         Returns an array representing the current status of the simulation.
         '''
         raise NotImplementedError()
 
-    def state_space(self) -> gymnasium.spaces.Space:
+    def state_space(self) -> gym.spaces.Space:
         '''
         Returns a gymnasium.spaces.Space containing the ranges of the state space.
         '''
         return NotImplementedError()
 
-    def action_space(self) -> gymnasium.spaces.Space:
+    def action_space(self) -> gym.spaces.Space:
         '''
         Return a gymnasium.spaces.Space
         '''
@@ -30,7 +31,7 @@ class SimulationInterface:
     def supports_context(self) -> list:
         return NotImplementedError()
 
-    def reset(self) -> tuple[gymnasium.spaces.Space, dict]:
+    def reset(self) -> tuple[gym.spaces.Space, dict]:
         '''
         Resets the simulation to the initial conditions and returns the initial
         conditions of the new environment, alongside additional information.

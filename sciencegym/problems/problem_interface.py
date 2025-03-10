@@ -14,6 +14,9 @@ class ProblemInterface:
 
     def current_state(self):
         return self.sim.current_state()
+    
+    def get_simulation(self):
+        return self.simulation
 
     # Interface methods
     def evaluation(self, equation):
