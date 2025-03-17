@@ -3,6 +3,13 @@ sys.path.append("/Users/lennartbaur/Documents/Arbeit/ScienceGym/Repo/science-gym
 
 from sciencegym.simulations.Simulation_InclinedPlane import Sim_InclinedPlane
 from sciencegym.problems.Problem_InclinedPlane import Problem_InclinedPlane
+
+from sciencegym.simulations.Simulation_Brachistochrone import Sim_Brachistochrone
+from sciencegym.problems.Problem_Brachistochrone import Problem_Brachistochrone
+
+from sciencegym.simulations.Simulation_SIRV import SIRVOneTimeVaccination
+from sciencegym.problems.Problem_SIRV import Problem_SIRV
+
 #from sciencegym.agents.StableBaselinesAgents import SACAgent
 
 from sciencegym.agents.StableBaselinesAgents.SACAgent import SACAgent
@@ -21,13 +28,13 @@ def get_env_dims(env):
     return in_dim, out_dim
 
 if __name__ == "__main__":
-    train_env = Sim_InclinedPlane()
-    test_env = Sim_InclinedPlane()
+    train_env = SIRVOneTimeVaccination()
+    test_env = SIRVOneTimeVaccination()
 
     input_dim, output_dim = get_env_dims(train_env)
 
-    train_problem = Problem_InclinedPlane(train_env)
-    test_problem = Problem_InclinedPlane(test_env)
+    train_problem = Problem_SIRV(train_env)
+    test_problem = Problem_SIRV(test_env)
 
     agent = SACAgent(input_dim, output_dim, lr=1e-4, policy='MlpPolicy')
 
