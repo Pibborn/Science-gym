@@ -1,28 +1,20 @@
-import math
-import sys
+from .simulation_interface import SimulationInterface
 import random
-
-from time import time, sleep
-
 import numpy as np
-from collections import defaultdict
 
-import Box2D  # The main library
+import Box2D
 from Box2D import b2Color, b2Vec2, b2DrawExtended
+
+import gym
 from gym import spaces
-from gym.spaces import Discrete, Dict, Box
-from gym.utils import seeding
-from pyglet.math import Vec2
+from gym.spaces import Box, Dict
 
 # from ScaleEnvironment.framework import (Framework, Keys, main)
 from Box2D.b2 import (world, polygonShape, circleShape, staticBody, dynamicBody, edgeShape, fixtureDef)
 
-import gym
-import pygame
-import matplotlib.cm as cm
-from matplotlib.colors import Normalize
+import math
 
-import xml.etree.ElementTree as ET
+import pygame
 
 # --- constants ---
 # Box2D deals with meters, but we want to display pixels,
@@ -97,7 +89,6 @@ def rescale_movement(original_interval, value, to_interval=(-BARLENGTH, +BARLENG
     c, d = to_interval
     return c + ((d - c) / (b - a)) * (value - a)
 
-
 class InclinePlaneCoordinates():
     def __init__(self, bottom_left, bottom_right, top_left):
         self.bottom_left = bottom_left
@@ -168,45 +159,18 @@ class InclinePlaneCoordinates():
                     self.length / 2)
 
 
-class InclinedPlane(gym.Env):
-    name = "InclinedPlane-v1"  # Name of the class to display
+class Sim_InclinedPlane(SimulationInterface):
 
-    def __init__(self, rendering=True, random_densities=False, random_boxsizes=False, normalize=False, placed=1,
-                 actions=1, sides=2, raw_pixels=False):
-        """
-        Initialization of the Scale Environment
-        :param rendering: Should the experiment be rendered or not
-        :type rendering: bool
-        :param random_densities: if True: randomized densities (from 4.0 to 6.0), else: fixed density which is set to 5.0
-        :type random_densities: bool
-        :param random_boxsizes: if True: randomzied sizes of the box (from 0.8 to 1.2), else: fixed box size which is set to 1.0
-        :type random_boxsizes: bool
-        :param normalize: Should the state and actions be normalized to values between 0 to 1 (or for the positions: -1 to 1) for the agent?
-        :type normalize: bool
-        :param placed: How many boxes should be placed randomly individually?
-        :type placed: int
-        :param actions: How many boxes should the agent place on the scale?
-        :type actions: int
-        :param sides: if 1: divided into 2 sides, placed boxes on the left and the agent to place by the agent on the right side; if 2: boxes can be dropped anywhere on the bar (except for the edges)
-        :type sides: int
-        :param raw_pixels: if True: the agent gets an pixel array as input, else: agent gets the observation space as an accumulation of values (positions, densities, boxsizes, bar angle, velocitiy of the bar, ...)
-        :type raw_pixels: bool
-        """
+    def __init__(self):
+        super().__init__()
 
-        # hilfsvariablen --------------
-
-        # ------------------------------
-        self.np_random = None
-        self.seed()
-        self.num_envs = 1  # for stable-baseline3
-        self.name = "InclinedPlane-v1"
-
-        # screen / observation space measurements
-        self.height = SCREEN_HEIGHT  # 480
-        self.width = SCREEN_WIDTH  # 640
+        self.order = None
+        self.raw_pixels = False
+        self.normalize = False
 
         # Pygame setup
-        if rendering:
+        self.rendering = True
+        if self.rendering:
             pygame.init()
 
             self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
@@ -215,26 +179,15 @@ class InclinedPlane(gym.Env):
             self.screen = pygame.display.set_mode((1, 1))
         self.clock = pygame.time.Clock()
 
+        # internal simulation information
         self.counter = 0
         self.timesteps = 0
         self.reward = 0
-
-        self.rendering = rendering  # should the simulation be rendered or not
-        self.color_counter = 0
-        self.normalize = normalize
-
-        self.raw_pixels = raw_pixels
-        self.order = None
-
-        # determine observation and action space here
-        # gravities
-        gravity_earth = -9.80665
-        gravity_moon = -1.62
-        gravity_mars = -3.71
-        gravity_venus = -8.87
+        
         self.gs_list = [-5, -6, -7, -8, -9] #, gravity_venus, -5, -5.5, -6.5, -7.5, -8.5, -9.5 ,-6, -7, -9, -10] # , gravity_mars, gravity_moon]
         self.min_gravity = min(self.gs_list)
         self.max_gravity= max(self.gs_list)
+        self.gravity = None
 
         # weights
         self.min_mass = 5
@@ -242,7 +195,7 @@ class InclinedPlane(gym.Env):
 
         # angles
         self.min_angle = 2
-        self.max_angle = 89
+        self.max_angle = 10
 
         # forces
         min_force = 0
@@ -251,46 +204,25 @@ class InclinedPlane(gym.Env):
         # Box2d world setup
         # Create the world
         self.world = world(gravity=(0, -9.80665), doSleep=True)
-
-
-        if not self.normalize:
-            self.action_space = Box(
-                low=min_force,
-                high=max_force,
-                shape=(1,), dtype=np.float32)
-
-        else:
-            self.action_space = Box(
-                low=min_force,
-                high=max_force,
-                shape=(1,), dtype=np.float32)
-
-        # observation space
-
-        if not raw_pixels:
-            observation_dict = {
+        
+        # Create the action space of the Sim
+        self.action_space = Box(
+            low=min_force,
+            high=max_force,
+            shape=(1,), dtype=np.float32)
+        
+        # Create the observation Sapce of the Sim
+        observation_dict = {
                 "mass": Box(low=self.min_mass, high=self.max_mass, shape=(1,), dtype=np.float32),
                 "gravity": Box(low=self.min_gravity, high=self.max_gravity, shape=(1,), dtype=np.float32),
                 "angle": Box(low=self.min_angle, high=self.max_angle, shape=(1,), dtype=np.float32),
                 "force": Box(low=min_force, high=max_force, shape=(1,), dtype=np.float32)
-
-            } if not self.normalize else {
-                "mass": Box(low=self.min_mass, high=self.max_mass, shape=(1,), dtype=int),
-                "gravity": Box(low=self.min_gravity, high=self.max_gravity, shape=(1,), dtype=np.float32),
-                "angle": Box(low=self.min_angle, high=self.max_angle, shape=(1,), dtype=int),
-                "force": Box(low=min_force, high=max_force, shape=(1,), dtype=np.float32)
             }
+        
+        self.observation_space = spaces.Dict(spaces=observation_dict)  # convert to Spaces Dict
 
-            self.observation_space = spaces.Dict(spaces=observation_dict)  # convert to Spaces Dict
+        self.force = 0 
 
-        else:
-            dummy_obs = self.render("rgb_array")
-            self.observation_space = spaces.Box(low=0, high=255, shape=dummy_obs.shape, dtype=dummy_obs.dtype)
-
-        # set inital force to zero for state
-        self.force = 0
-
-        # reset every dict/array and all the boxes on the screen
         self.reset()
 
         # state calculation
@@ -299,6 +231,8 @@ class InclinedPlane(gym.Env):
         self.normalized_state = None
 
         return None
+
+
 
     def createNewExperiment(self):
 
@@ -315,18 +249,18 @@ class InclinedPlane(gym.Env):
         self.angle = np.random.randint(self.min_angle, self.max_angle + 1)
         while 89.1<= self.angle <= 90.9:
             self.angle = np.random.randint(self.min_angle, self.max_angle + 1)
+        
         try:
             self.world.DestroyBody(self.inclinedPlane)
         except Exception as e:
             print(f"destroy inclined plane{e}")
         # destroy old ball and create new ball
+        
         try:
             self.world.DestroyBody(self.ball)
         except Exception as e:
             print(f"destroy inclined plane{e}")
 
-        # coordinates = coordinatesInclinedPlane(self.angle)
-        # self.plane_cords = InclinePlaneCoordinates(coordinates[1], coordinates[2], coordinates[0])
 
         self.plane_cords = InclinePlaneCoordinates(self.angle)
         coordinates = self.plane_cords.get_coordinates()
@@ -344,114 +278,8 @@ class InclinedPlane(gym.Env):
 
         self.inclinedPlane = self.world.CreateStaticBody(
             position=(0, 0),
-            fixtures=fixtureDef(shape=polygonShape(vertices=coordinates[0:3]),
-                                density=100),
+            fixtures=fixtureDef(shape=polygonShape(vertices=coordinates[0:3])),
             userData=color)
-
-    def convertDensityToRGB(self, density, low=4., high=6., channels=[True, True, True]):
-        """
-        Gets a value for the density of one box and returns the corresponding color
-
-        :param density: density of the box (should be in range of the interval)
-        :type density: float
-        :param low: the minimum value for the d ensity
-        :type low: float
-        :param high: the maximum value for the density
-        :type high: float
-        :param channels: an array with 3 entries, where each entry says if the color channel should be used or not.
-        e.g. if it's [True, False, True], we want to use the Red and Blue channel, but not the Green channel.
-        :type channels: list[bool, bool, bool]
-        :return: a RGB color
-        :rtype: (int, int, int)
-        """
-        if not (low <= density <= high):
-            raise AssertionError(f"Density {density} not in allowed range [{low},{high}]")
-
-        if len(channels) != 3 or not all(type(channel) == bool for channel in channels):
-            raise TypeError("Type of the channels array has to be a List of 3 Bool values.")
-
-        total_number_of_colors = 256 ** sum(channels)
-        # first normalize the density
-        density = int(rescale_movement([low, high], density, [0., total_number_of_colors - 1]))
-
-        RGB = [0, 0, 0]
-
-        index = 0
-        for i in reversed([i for i, boolean in enumerate(channels) if boolean]):
-            RGB[i] = (density >> (index * 8)) & 255
-            index += 1
-        red, green, blue = RGB
-        return red, green, blue
-
-    def convertRGBToDensity(self, RGB, low=4., high=6., channels=[True, True, True]):
-        """
-        Gets a RGB value of an box and returns the corresponding density of the box
-
-        :param RGB: (red, green, blue) values
-        :type RGB: (int, int, int)
-        :param low: the minimum value for the density
-        :type low: float
-        :param high: the maximum value for the density
-        :type high: float
-        :return: density value
-        :rtype: float
-        """
-        if not all(0 <= colorVal <= 255 for colorVal in RGB):
-            raise AssertionError(f"RGB value {RGB} not allowed!")
-
-        if len(channels) != 3 or (type(channels[i]) != bool for i in range(3)):
-            raise TypeError("Type of the channels array has to be a List of 3 Bool values.")
-
-        total_number_of_colors = 256 ** sum(channels)
-
-        value = 0
-        index = 0
-
-        for i in reversed([i for i, boolean in enumerate(channels) if boolean]):
-            value += RGB[i] * 256 ** index
-            index += 1
-
-        value /= total_number_of_colors
-
-        # rescale the density
-        density = rescale_movement([0., total_number_of_colors - 1], value, [low, high])
-
-        return density
-
-    def convertDensityToGrayscale(self, density, low=4., high=6.):  # todo: fix
-        """
-        Gets a value for the density of one box and returns the corresponding grayscale value
-
-        :param density: density of the box (should be in range of the interval)
-        :type density: float
-        :param low: the minimum value for the density
-        :type low: float
-        :param high: the maximum value for the density
-        :type high: float
-        :return: a RGB color
-        :rtype: (int, int, int)
-        """
-        colormap = cm.gray
-        norm = Normalize(vmin=low, vmax=high)
-        red, green, blue, brightness = colormap(norm(density))
-
-        return red, green, blue  # , brightness
-
-    def convertGrayscaleToDensity(self, RGB, low=4., high=6.):  # todo
-        """
-        Gets a Grayscale value of an box and returns the corresponding density of the box
-
-        :param RGB: (red, green, blue) values
-        :type RGB: (int, int, int)
-        :param low: the minimum value for the density
-        :type low: float
-        :param high: the maximum value for the density
-        :type high: float
-        :return: density value
-        :rtype: float
-        """
-        density = None
-        return density
 
     def getState(self):
         """
@@ -474,39 +302,58 @@ class InclinedPlane(gym.Env):
             self.normalized_state = self.rescaleState()
         return self.state
 
-    def rescaleState(self, state=None):
-        """
-        Returns normalized version of the state
-
-        :param state: the normal state, which is not normalized yet
-        :type state: np.ndarray
-        :return: the new normalized state
-        :rtype: np.ndarray
-        """
-        if state is None:
-            state = self.state
-
-        if self.raw_pixels:
-            normalized_state = rescale_movement([0, 255], self.state, [0., 1.])
-        else:
-            normalized_state = None
-        return normalized_state
     def step(self, action):
+        print("#############\nStep is called")
+        #return self.step_no_sim(action)
+        return self.simulated_step(action)
+
+    def step_no_sim(self, action):
         """
-        here you can exchange the step function very simple from simulated to synthetic step functions
-        options:
-        1) simulated steps
-        - simulated_step (here you can exchange the reward function in the internal step function)
-        2) synthetic steps
-        - synthetic_step_percentual_difference_between_forces
-        - synthetic_step_percentual_change_position_or_velocity
-        - step_without_physics_constant
-        - step_without_physics_angle_dependant
+        gets reward dependant on how much percentual difference is between the observed movement or velocity
+        of the ball to the movement or velocity you would expect if the force was predicted correctly
+        with a percentual difference of delta_percent
         :param action:
         :return:
         """
-        return self.synthetic_step_percentual_change_position_or_velocity(action)
+        delta_percent = 0.014
+        t = 1
+        self.getState()
 
+        Fagent = action[0]
+        degangle = self.angle
+        radangle = degreeToRad(degangle)
+        gravity = round(random.uniform(6, 12), 2) #self.gravity #round(random.uniform(6, 12), 2) # 9.80665
+        mass = self.mass
+
+        Fgoal = mass * gravity * math.sin(radangle)
+        accgoal = gravity * math.sin(radangle) * delta_percent
+        
+        vgoal = accgoal * t
+        
+        sgoal = 1/2 * accgoal * t**2
+
+        Fres = abs(Fgoal - Fagent)
+        accagent = Fres/mass # a
+        vagent = accagent * t
+        sagent = 1/2 * accagent * t**2
+
+        isstate = sagent
+        goalstate = sgoal
+        if 0 <= isstate <= goalstate:
+            reward = 2
+        elif isstate <= 3*goalstate:
+            reward = 1
+        elif isstate <= 10*goalstate:
+            reward = 0
+        else:
+            reward = -1
+        self.old_state = self.state
+        #self.gravity = round(random.uniform(6, 12), 2) 
+        state = np.array([mass, gravity, radangle, Fagent], dtype=np.float32)
+        self.state = state
+        return state, reward, True, {}
+    
+    # Simulated Step
     def simulated_step(self, action):
         """
         Actual step function called by the agent when box2d simulation is used
@@ -534,164 +381,9 @@ class InclinedPlane(gym.Env):
         #    done = True
         #   self.reset()
         state = self.state.copy()
-        self.reset()
+        #self.reset()
         done = True
         return state, reward, done, info
-
-    def synthetic_step_percentual_difference_between_forces(self, action):
-        """
-        gets reward dependant on how much percentual difference is between the force applied by the agent
-        and the actual force needed
-        :param action:
-        :return:
-        """
-        self.getState()
-        Fagent = action[0]
-        degangle = self.angle
-        radangle = degreeToRad(degangle)
-        gravity = 9.80665
-        mass = self.mass
-        Fgoal = mass * gravity * math.sin(radangle)
-        relDifference = (abs(Fagent - Fgoal) / abs(Fgoal))
-        if  0<= relDifference <= 0.001:
-            reward = 2
-        elif relDifference <= 0.003:
-            reward = 1
-        elif relDifference <= 0.01:
-            reward = 0
-        else:
-            reward = -1
-        self.old_state = self.state
-        state = np.array([mass, gravity, radangle, Fagent], dtype=np.float32)
-        self.state = state
-        return state, reward, True, {}
-
-    def synthetic_step_percentual_change_position_or_velocity(self, action):
-        """
-        gets reward dependant on how much percentual difference is between the observed movement or velocity
-        of the ball to the movement or velocity you would expect if the force was predicted correctly
-        with a percentual difference of delta_percent
-        :param action:
-        :return:
-        """
-        delta_percent = 0.014
-        t = 1
-        self.getState()
-        Fagent = action[0]
-        degangle = self.angle
-        radangle = degreeToRad(degangle)
-        gravity = round(random.uniform(6, 12), 2) # 9.80665
-        mass = self.mass
-
-        Fgoal = mass * gravity * math.sin(radangle)
-        accgoal = gravity * math.sin(radangle) * delta_percent
-        vgoal = accgoal * t
-        sgoal = 1/2 * accgoal * t**2
-
-        Fres = abs(Fgoal - Fagent)
-        accagent = Fres/mass # a
-        vagent = accagent * t
-        sagent = 1/2 * accagent * t**2
-
-        isstate = sagent
-        goalstate = sgoal
-        if 0 <= isstate <= goalstate:
-            reward = 2
-        elif isstate <= 3*goalstate:
-            reward = 1
-        elif isstate <= 10*goalstate:
-            reward = 0
-        else:
-            reward = -1
-        self.old_state = self.state
-        state = np.array([mass, gravity, radangle, Fagent], dtype=np.float32)
-        self.state = state
-        return state, reward, True, {}
-
-    def step_without_physics_constant(self, action):
-        """
-        like synthetic_step_percentual_change_position_or_velocity to play around with the constants and parameters
-        here the gravity is set constant
-        :param action:
-        :return:
-        """
-        delta_percent = 0.03 # 0.018
-        t = 1
-        self.getState()
-        Fagent = action[0]
-        degangle = self.angle
-        radangle = degreeToRad(degangle)
-        gravity = 9.80665
-        mass = self.mass
-
-        Fgoal = mass * gravity * math.sin(degreeToRad(30))
-        accgoal = gravity * math.sin(degreeToRad(30)) * delta_percent
-        vgoal = accgoal * t
-        sgoal = 1/2 * accgoal * t**2
-
-        Fres = abs(Fgoal - Fagent)
-        accagent = Fres/mass # a
-        vagent = accagent * t
-        sagent = 1/2 * accagent * t**2
-
-        isstate = sagent
-        goalstate = sgoal
-        if 0 <= isstate <= goalstate:
-            reward = 2
-        elif isstate <= 3*goalstate:
-            reward = 1
-        elif isstate <= 10*goalstate:
-            reward = 0
-        else:
-            reward = -1
-        self.old_state = self.state
-        state = np.array([mass, gravity, radangle, Fagent], dtype=np.float32)
-        self.state = state
-        return state, reward, True, {}
-
-    def step_without_physics_angle_dependant(self, action):
-        """
-        try to learn small angles as good as bigger angles
-        by decreasing the allowed change in position of the ball the smaller the angle is
-        :param action:
-        :return:
-        """
-        delta_percent = 0.018
-        t = 1
-        self.getState()
-        Fagent = action[0]
-        degangle = self.angle
-        radangle = degreeToRad(degangle)
-        gravity = 9.80665
-        mass = self.mass
-
-        Fgoal = mass * gravity * math.sin(degreeToRad(2))
-        accgoal = gravity * math.sin(degreeToRad(2)) * delta_percent
-        vgoal = accgoal * t
-        sgoal = 1/2 * accgoal * t**2
-
-        Fres = abs(Fgoal - Fagent)
-        accagent = Fres/mass # a
-        vagent = accagent * t
-        sagent = 1/2 * accagent * t**2
-
-        isstate = sagent
-        goalstate = sgoal
-
-        if radangle < 1:
-            goalstate *= radangle
-        if 0 <= isstate <= goalstate:
-            reward = 2
-        elif isstate <= 3*goalstate:
-            reward = 1
-        elif isstate <= 10*goalstate:
-            reward = 0
-        else:
-            reward = -1
-        self.old_state = self.state
-        state = np.array([mass, gravity, radangle, Fagent], dtype=np.float32)
-        self.state = state
-        return state, reward, True, {}
 
     def internal_step(self, action=None):
         """
@@ -758,7 +450,7 @@ class InclinedPlane(gym.Env):
         if not self.plane_cords.is_ball_in_plane_bounds(self.ball.position):
             self.render()
             state = self.state.copy()
-            self.reset()
+           # self.reset()
             # return state, reward, True, {}
             return state, reward, True, {}
 
@@ -858,7 +550,8 @@ class InclinedPlane(gym.Env):
                 # self.world.Step(TIME_STEP, 10, 10)
 
                 pygame.display.flip()
-            if demo:
+           # if demo:
+            if True:
                 self.clock.tick(TARGET_FPS)
             return None
 
@@ -876,35 +569,26 @@ class InclinedPlane(gym.Env):
         scaled_screen = pygame.transform.smoothscale(screen, size)
         return np.array(pygame.surfarray.pixels3d(scaled_screen))
 
+    # simulated step end
     def reset(self):
-        """
-        Reset function for the whole environment. Inside of it, we reset every counter/reward, we reset the boxes, the state and all other necessary things.
-
-        :return: the new state (normalized, if wished)
-        :rtype: np.ndarray
-        """
-        # delete ball inclined plane etc todo:
-        # Reset the reward and the counters
+        print("#############\nReset is called")
         self.counter = 0
         self.timesteps = 0
         self.reward = 0
 
-        #
         self.createNewExperiment()
 
-        # return the observation
         self.getState()
-        
-        return self.rescaleState() if self.normalize else self.state
+       
+        return self.state
+    
+    def current_state(self):
+        #self.state = np.array([self.ball.mass, self.gravity, np.deg2rad(self.angle), self.force], dtype=np.float32)
+        return self.state if self.state else self.getState()
 
-    def seed(self, seed=None):
-        """
-        Seed function for the random number calculation
-
-        :param seed: if None: cannot recreate the same results afterwards
-        :type seed: int
-        :return: the seed
-        :rtype: list[int]
-        """
-        self.np_random, seed = seeding.np_random(seed)
-        return [seed]
+    def action_space(self):
+        return self.action_space
+    
+    def state_space(self):
+        return self.observation_space
+    
