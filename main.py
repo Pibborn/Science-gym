@@ -10,10 +10,12 @@ from sciencegym.problems.Problem_Brachistochrone import Problem_Brachistochrone
 from sciencegym.simulations.Simulation_SIRV import SIRVOneTimeVaccination
 from sciencegym.problems.Problem_SIRV import Problem_SIRV
 
+
+
 #from sciencegym.agents.StableBaselinesAgents import SACAgent
 
 from sciencegym.agents.StableBaselinesAgents.SACAgent import SACAgent
-
+from stable_baselines3.common.vec_env import DummyVecEnv
 from gym.spaces import Dict
 
 def get_env_dims(env):
@@ -27,6 +29,20 @@ def get_env_dims(env):
         in_dim = len(env.observation_space)
     return in_dim, out_dim
 
+def train_loop(agent, train_problem, test_problem, MAX_EPISODES = 10, PRINT_EVERY = 10, VERBOSE=1, SDE=False):
+
+    train_problem = DummyVecEnv([lambda: train_problem])
+    test_problem = DummyVecEnv([lambda: test_problem])
+
+    agent.agent = agent.create_model(train_problem, verbose=VERBOSE, use_sde=SDE)
+
+    agent.agent.learn(MAX_EPISODES, log_interval=PRINT_EVERY, eval_env=test_problem, eval_freq=PRINT_EVERY,
+                             eval_log_path='agents/temp')
+    
+    return None
+
+
+
 if __name__ == "__main__":
     train_env = SIRVOneTimeVaccination()
     test_env = SIRVOneTimeVaccination()
@@ -38,6 +54,8 @@ if __name__ == "__main__":
 
     agent = SACAgent(input_dim, output_dim, lr=1e-4, policy='MlpPolicy')
 
-    agent.train_loop(train_problem, test_problem, None, verbose=2, only_testing=False)
+    #agent.train_loop(train_problem, test_problem, None, verbose=2, only_testing=False)
+
+    train_loop(agent, train_problem, test_problem)
 
     print("Finish")

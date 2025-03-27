@@ -37,13 +37,13 @@ class SIRVEnvironment(SimulationInterface, ABC):
         self.episode_number = 0
         self.episode_steps = 0
     
-    def current_state(self):
+    def get_current_state(self):
         return self.get_observation()
     
-    def state_space(self):
+    def get_state_space(self):
         return self.observation_space
     
-    def action_space(self):
+    def get_action_space(self):
         return self.action_space
 
     def seed(self, num):

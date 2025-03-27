@@ -5,15 +5,28 @@ class ProblemInterface:
     def __init__(self, sim: SimulationInterface):
         self.simulation = sim
 
+        self.observation_space = self.get_state_space()
+        self.action_space = self.get_action_space()
+
+    def __getattr__(self, name):
+        """Delegate attribute access to instance of B if not found in A"""
+        if hasattr(self.simulation, name):
+            return getattr(self.simulation, name)
+        raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
+
+
     # Methods mirrored from SimulationInterface
     def step(self, action):
-        return self.sim.step(action)
+        return self.simulation.step(action)
 
-    def state_space(self):
-        return self.sim.state_space()
+    def get_state_space(self):
+        return self.simulation.get_state_space()
 
-    def current_state(self):
-        return self.sim.current_state()
+    def get_current_state(self):
+        return self.simulation.get_current_state()
+    
+    def get_action_space(self):
+        return self.simulation.get_action_space()
     
     def get_simulation(self):
         return self.simulation
