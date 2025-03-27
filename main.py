@@ -1,4 +1,5 @@
 import sys
+import csv
 sys.path.append("/Users/lennartbaur/Documents/Arbeit/ScienceGym/Repo/science-gym")
 
 from sciencegym.simulations.Simulation_InclinedPlane import Sim_InclinedPlane
@@ -17,6 +18,8 @@ from sciencegym.problems.Problem_SIRV import Problem_SIRV
 from sciencegym.agents.StableBaselinesAgents.SACAgent import SACAgent
 from stable_baselines3.common.vec_env import DummyVecEnv
 from gym.spaces import Dict
+
+import numpy as np
 
 def get_env_dims(env):
     if type(env.action_space) is not dict:
@@ -41,7 +44,54 @@ def train_loop(agent, train_problem, test_problem, MAX_EPISODES = 10, PRINT_EVER
     
     return None
 
+def evaluate(agent, env):
+        state = env.reset()  # torch.tensor(env.reset())
+        R = 0  # return (sum of rewards)
+        t = 0  # time step
+        done = False
+        while not done:
+            action, states = agent.agent.predict(state, deterministic=True)
+            state, reward, done, _ = env.step(action)
+            R += reward
+            t += 1
+            reset = t == 200
+            if done or reset:
+                break
+        return R, state, action
 
+def test_loop(agent, test_env, episodes, reward_threshold):
+    sirv_variables = ['susceptible', 'infected', 'recovered', 'vaccinated', 'transmission_rate', 'recovery_rate']
+
+    if type(test_env) != DummyVecEnv:
+        test_env = DummyVecEnv([lambda: test_env])
+
+    test_rewards = []
+    test_matches = 0
+
+    succesfull_states = []
+
+    for episode in range(episodes):
+            test_reward, state, action = evaluate(agent, env=test_env)
+            if test_reward >= reward_threshold:
+                succesfull_states.append(state)
+                test_matches += 1
+            test_rewards.append(test_reward)
+
+    
+    #mean_test_rewards = np.mean(test_rewards)
+            
+    print(f"Success rate of test episodes: {test_matches}/{episodes}={(test_matches / episodes * 100):,.2f}%")
+    
+    # Flatten each inner array and convert to a 2D array
+    flattened_data = [arr.flatten() for arr in succesfull_states]
+
+    # Write to CSV
+    with open('output.csv', 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(sirv_variables)
+        writer.writerows(flattened_data)
+    
+    return test_rewards
 
 if __name__ == "__main__":
     train_env = SIRVOneTimeVaccination()
@@ -56,6 +106,8 @@ if __name__ == "__main__":
 
     #agent.train_loop(train_problem, test_problem, None, verbose=2, only_testing=False)
 
-    train_loop(agent, train_problem, test_problem)
+    train_loop(agent, train_problem, test_problem, MAX_EPISODES=1000)
+    test_loop(agent, test_problem, episodes=1000, reward_threshold=-0.3)
+
 
     print("Finish")
