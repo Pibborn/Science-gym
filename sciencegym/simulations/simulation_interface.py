@@ -10,19 +10,19 @@ class SimulationInterface(gym.Env):
     def step(self, action):
         raise NotImplementedError()
 
-    def current_state(self) -> gym.spaces.Space:
+    def get_current_state(self) -> gym.spaces.Space:
         '''
         Returns an array representing the current status of the simulation.
         '''
         raise NotImplementedError()
 
-    def state_space(self) -> gym.spaces.Space:
+    def get_state_space(self) -> gym.spaces.Space:
         '''
         Returns a gymnasium.spaces.Space containing the ranges of the state space.
         '''
         return NotImplementedError()
 
-    def action_space(self) -> gym.spaces.Space:
+    def get_action_space(self) -> gym.spaces.Space:
         '''
         Return a gymnasium.spaces.Space
         '''
