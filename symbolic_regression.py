@@ -13,7 +13,7 @@ df = pd.read_csv(csv_path)
 print(df.head(5))
 
 # Extract input and output arrays
-X = df[input_columns].values
+X = df[['recovery_rate', 'transmission_rate']].values
 y = df[output_column].values
 
 # Create symbolic regressor
@@ -22,7 +22,7 @@ model = PySRRegressor(
     niterations=40,        
     binary_operators=["+", "-", "*", "/"],
     unary_operators=[
-        "sin", "cos", "exp", "log", "sqrt", "abs"
+        
     ],
     extra_sympy_mappings={"sqrt": lambda x: x**0.5},
     progress=True,

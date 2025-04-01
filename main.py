@@ -12,9 +12,6 @@ from sciencegym.simulations.Simulation_SIRV import SIRVOneTimeVaccination
 from sciencegym.problems.Problem_SIRV import Problem_SIRV
 
 
-
-#from sciencegym.agents.StableBaselinesAgents import SACAgent
-
 from sciencegym.agents.StableBaselinesAgents.SACAgent import SACAgent
 from stable_baselines3.common.vec_env import DummyVecEnv
 from gym.spaces import Dict
@@ -38,26 +35,31 @@ def train_loop(agent, train_problem, test_problem, MAX_EPISODES = 10, PRINT_EVER
     test_problem = DummyVecEnv([lambda: test_problem])
 
     agent.agent = agent.create_model(train_problem, verbose=VERBOSE, use_sde=SDE)
-
     agent.agent.learn(MAX_EPISODES, log_interval=PRINT_EVERY, eval_env=test_problem, eval_freq=PRINT_EVERY,
                              eval_log_path='agents/temp')
     
     return None
 
 def evaluate(agent, env):
-        state = env.reset()  # torch.tensor(env.reset())
-        R = 0  # return (sum of rewards)
-        t = 0  # time step
-        done = False
-        while not done:
-            action, states = agent.agent.predict(state, deterministic=True)
-            state, reward, done, _ = env.step(action)
-            R += reward
-            t += 1
-            reset = t == 200
-            if done or reset:
-                break
-        return R, state, action
+    state = env.reset()
+    R = 0  # return (sum of rewards)
+    t = 0  # time step
+    done = False
+    while not done:
+        #print('state at reset: ', state)
+        action, _ = agent.agent.predict(state, deterministic=True)
+        #print('start the step')
+        state, reward, done, _ = env.step(action)
+        #print('state in evaluate: ',state)
+        terminal_state = env.buf_infos[0]["terminal_observation"]
+        #print('Terminal observation: ', terminal_state)
+        state = np.array(terminal_state)
+        R += reward
+        t += 1
+        reset = t == 200
+        if done or reset:
+            break
+    return R, state, action
 
 def test_loop(agent, test_env, episodes, reward_threshold):
     sirv_variables = ['susceptible', 'infected', 'recovered', 'vaccinated', 'transmission_rate', 'recovery_rate']
@@ -71,15 +73,13 @@ def test_loop(agent, test_env, episodes, reward_threshold):
     succesfull_states = []
 
     for episode in range(episodes):
-            test_reward, state, action = evaluate(agent, env=test_env)
-            if test_reward >= reward_threshold:
-                succesfull_states.append(state)
-                test_matches += 1
-            test_rewards.append(test_reward)
+        test_reward, state, action = evaluate(agent, env=test_env)
+        if test_reward >= reward_threshold:
+            succesfull_states.append(state)
+            test_matches += 1
+        test_rewards.append(test_reward)
 
     
-    #mean_test_rewards = np.mean(test_rewards)
-            
     print(f"Success rate of test episodes: {test_matches}/{episodes}={(test_matches / episodes * 100):,.2f}%")
     
     # Flatten each inner array and convert to a 2D array
@@ -104,10 +104,7 @@ if __name__ == "__main__":
 
     agent = SACAgent(input_dim, output_dim, lr=1e-4, policy='MlpPolicy')
 
-    #agent.train_loop(train_problem, test_problem, None, verbose=2, only_testing=False)
-
-    train_loop(agent, train_problem, test_problem, MAX_EPISODES=1000)
-    test_loop(agent, test_problem, episodes=1000, reward_threshold=-0.3)
-
+    train_loop(agent, train_problem, test_problem, MAX_EPISODES=15000)
+    test_loop(agent, test_problem, episodes=15000, reward_threshold=-0.3)
 
     print("Finish")
