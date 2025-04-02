@@ -1,9 +1,12 @@
 import pandas as pd
 from pysr import PySRRegressor
+from sciencegym.equation import Equation
+from sciencegym.problems.Problem_SIRV import Problem_SIRV
+from sciencegym.simulations.Simulation_SIRV import SIRVOneTimeVaccination
 
 # === User inputs ===
-csv_path = 'output.csv'  
-input_columns = ['susceptible', 'infected', 'recovered', 'transmission_rate', 'recovery_rate']
+csv_path = 'output_SIRV.csv'  
+input_columns = ['transmission_rate', 'recovery_rate']
 output_column = 'vaccinated'
 # ===================
 
@@ -13,7 +16,7 @@ df = pd.read_csv(csv_path)
 print(df.head(5))
 
 # Extract input and output arrays
-X = df[['recovery_rate', 'transmission_rate']].values
+X = df[input_columns].values
 y = df[output_column].values
 
 # Create symbolic regressor
@@ -21,16 +24,19 @@ model = PySRRegressor(
     model_selection="best",  
     niterations=40,        
     binary_operators=["+", "-", "*", "/"],
-    unary_operators=[
-        
+    unary_operators=[        
     ],
     extra_sympy_mappings={"sqrt": lambda x: x**0.5},
     progress=True,
 )
 
-# Fit the model
-model.fit(X, y)
+model.fit(X, y, variable_names=input_columns)
 
-# Print the discovered equations
-print(model)
+env = SIRVOneTimeVaccination()
+problem = Problem_SIRV(env)
 
+for _, row in model.equations_.iterrows():
+    expr = row['sympy_format']
+    eq = Equation(expr)
+    score = problem.evaluate(eq, data=df)
+    print(f"Equation: {eq}, Score: {score}, Equality: {eq == problem.solution()}")

@@ -11,6 +11,7 @@ from sciencegym.problems.Problem_Brachistochrone import Problem_Brachistochrone
 from sciencegym.simulations.Simulation_SIRV import SIRVOneTimeVaccination
 from sciencegym.problems.Problem_SIRV import Problem_SIRV
 
+from sciencegym.problems.problem_Basketball import Problem_Basketball
 
 from sciencegym.agents.StableBaselinesAgents.SACAgent import SACAgent
 from stable_baselines3.common.vec_env import DummyVecEnv
@@ -46,13 +47,9 @@ def evaluate(agent, env):
     t = 0  # time step
     done = False
     while not done:
-        #print('state at reset: ', state)
         action, _ = agent.agent.predict(state, deterministic=True)
-        #print('start the step')
         state, reward, done, _ = env.step(action)
-        #print('state in evaluate: ',state)
         terminal_state = env.buf_infos[0]["terminal_observation"]
-        #print('Terminal observation: ', terminal_state)
         state = np.array(terminal_state)
         R += reward
         t += 1
@@ -104,7 +101,7 @@ if __name__ == "__main__":
 
     agent = SACAgent(input_dim, output_dim, lr=1e-4, policy='MlpPolicy')
 
-    train_loop(agent, train_problem, test_problem, MAX_EPISODES=15000)
-    test_loop(agent, test_problem, episodes=15000, reward_threshold=-0.3)
+    train_loop(agent, train_problem, test_problem, MAX_EPISODES=100)
+    test_loop(agent, test_problem, episodes=100, reward_threshold=-0.3)
 
     print("Finish")
