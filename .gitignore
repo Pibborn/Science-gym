@@ -1,2 +1,6 @@
 venv/
 to-do.md
+results/
+agents/
+.DS_Store
+__pycache__/
