@@ -52,15 +52,21 @@ def evaluate(agent, env):
         while not done:
             action, states = agent.agent.predict(state, deterministic=True)
             state, reward, done, _ = env.step(action)
+
+            terminal_state = env.buf_infos[0]["terminal_observation"]
+            #print('Terminal observation: ', terminal_state)
+            state = np.array(terminal_state)
+
             R += reward
             t += 1
             reset = t == 200
             if done or reset:
                 break
+        #print(f"the state whih is retunred: {state}")
         return R, state, action
 
 def test_loop(agent, test_env, episodes, reward_threshold):
-    sirv_variables = ['susceptible', 'infected', 'recovered', 'vaccinated', 'transmission_rate', 'recovery_rate']
+    sirv_variables = ['mass', 'gravity', 'angle', 'force']#['susceptible', 'infected', 'recovered', 'vaccinated', 'transmission_rate', 'recovery_rate']
 
     if type(test_env) != DummyVecEnv:
         test_env = DummyVecEnv([lambda: test_env])
@@ -94,20 +100,20 @@ def test_loop(agent, test_env, episodes, reward_threshold):
     return test_rewards
 
 if __name__ == "__main__":
-    train_env = SIRVOneTimeVaccination()
-    test_env = SIRVOneTimeVaccination()
+    train_env = Sim_InclinedPlane()
+    test_env = Sim_InclinedPlane()
 
     input_dim, output_dim = get_env_dims(train_env)
 
-    train_problem = Problem_SIRV(train_env)
-    test_problem = Problem_SIRV(test_env)
+    train_problem = Problem_InclinedPlane(train_env)
+    test_problem = Problem_InclinedPlane(test_env)
 
     agent = SACAgent(input_dim, output_dim, lr=1e-4, policy='MlpPolicy')
 
     #agent.train_loop(train_problem, test_problem, None, verbose=2, only_testing=False)
 
-    train_loop(agent, train_problem, test_problem, MAX_EPISODES=1000)
-    test_loop(agent, test_problem, episodes=1000, reward_threshold=-0.3)
+    train_loop(agent, train_problem, test_problem, MAX_EPISODES=10000)
+    test_loop(agent, test_problem, episodes=1000, reward_threshold=-0.01)#-0.3)
 
 
     print("Finish")

@@ -191,15 +191,15 @@ class Sim_InclinedPlane(SimulationInterface):
 
         # weights
         self.min_mass = 5
-        self.max_mass = 2000
+        self.max_mass = 200
 
         # angles
-        self.min_angle = 2
-        self.max_angle = 10
+        self.min_angle = 5
+        self.max_angle = 70
 
         # forces
         min_force = 0
-        max_force = abs(self.max_mass * self.max_gravity)
+        self.max_force = abs(self.max_mass * self.max_gravity) * math.sin(degreeToRad(self.max_angle))
 
         # Box2d world setup
         # Create the world
@@ -208,7 +208,7 @@ class Sim_InclinedPlane(SimulationInterface):
         # Create the action space of the Sim
         self.action_space = Box(
             low=min_force,
-            high=max_force,
+            high=self.max_force,
             shape=(1,), dtype=np.float32)
         
         # Create the observation Sapce of the Sim
@@ -216,10 +216,12 @@ class Sim_InclinedPlane(SimulationInterface):
                 "mass": Box(low=self.min_mass, high=self.max_mass, shape=(1,), dtype=np.float32),
                 "gravity": Box(low=self.min_gravity, high=self.max_gravity, shape=(1,), dtype=np.float32),
                 "angle": Box(low=self.min_angle, high=self.max_angle, shape=(1,), dtype=np.float32),
-                "force": Box(low=min_force, high=max_force, shape=(1,), dtype=np.float32)
+                "force": Box(low=min_force, high=self.max_force, shape=(1,), dtype=np.float32)
             }
         
         self.observation_space = spaces.Dict(spaces=observation_dict)  # convert to Spaces Dict
+
+        self.observation_space = self.convert_observation_space(self.observation_space)
 
         self.force = 0 
 
@@ -232,7 +234,28 @@ class Sim_InclinedPlane(SimulationInterface):
 
         return None
 
+    def convert_observation_space(self, obs_space: spaces.Dict, order: list[str] = []) -> spaces.Box:
+        """Convert an existing scale environment so that the observation space is a Box instead of a Dict.
 
+                :type obs_space: gym.spaces.Dict
+                :param obs_space: the given observation space in the old format
+                :type order: list[str]
+                :param order: give a list of the descriptions as an order for the new observation space
+                :returns: the new observation space as a Box
+                :rtype: gym.spaces.Box
+        """
+        # not the best solution
+        if not order:
+            low = [obs_space[x].low[0] for x in obs_space]
+            high = [obs_space[x].high[0] for x in obs_space]
+            # shape = obs_space[list(obs_space)[0]].shape[2]
+        else:
+            low = [obs_space[entry].low[0] for entry in order]
+            high = [obs_space[entry].high[0] for entry in order]
+        observation_space = spaces.Box(low=np.array(low), high=np.array(high),
+                                       # shape=(shape,), # todo: fix shape
+                                       dtype=np.float32)
+        return observation_space
 
     def createNewExperiment(self):
 
@@ -303,7 +326,7 @@ class Sim_InclinedPlane(SimulationInterface):
         return self.state
 
     def step(self, action):
-        print("#############\nStep is called")
+        #print("#############\nStep is called")
         #return self.step_no_sim(action)
         return self.simulated_step(action)
 
@@ -320,36 +343,51 @@ class Sim_InclinedPlane(SimulationInterface):
         self.getState()
 
         Fagent = action[0]
+        #print(f"Force of agent{Fagent}")
         degangle = self.angle
         radangle = degreeToRad(degangle)
-        gravity = round(random.uniform(6, 12), 2) #self.gravity #round(random.uniform(6, 12), 2) # 9.80665
+        gravity = self.gravity #round(random.uniform(6, 12), 2) #self.gravity #round(random.uniform(6, 12), 2) # 9.80665
         mass = self.mass
 
         Fgoal = mass * gravity * math.sin(radangle)
-        accgoal = gravity * math.sin(radangle) * delta_percent
-        
-        vgoal = accgoal * t
-        
-        sgoal = 1/2 * accgoal * t**2
 
-        Fres = abs(Fgoal - Fagent)
-        accagent = Fres/mass # a
-        vagent = accagent * t
-        sagent = 1/2 * accagent * t**2
+        error = Fagent + Fgoal  # Net force
+        reward = - (error / self.max_force) ** 2
 
-        isstate = sagent
-        goalstate = sgoal
-        if 0 <= isstate <= goalstate:
-            reward = 2
-        elif isstate <= 3*goalstate:
-            reward = 1
-        elif isstate <= 10*goalstate:
-            reward = 0
-        else:
-            reward = -1
+        # Optional precision bonus
+        if abs(error) < 0.1:
+            reward += 2
+
+
+        # accgoal = gravity * math.sin(radangle) * delta_percent
+        
+        # vgoal = accgoal * t
+        
+        # sgoal = 1/2 * accgoal * t**2
+
+        # Fres = abs(Fgoal - Fagent)
+        # accagent = Fres/mass # a
+        # vagent = accagent * t
+        # sagent = 1/2 * accagent * t**2
+
+        # isstate = sagent
+        # goalstate = sgoal
+        # if 0 <= isstate <= goalstate:
+        #     reward = 2
+        # elif isstate <= 3*goalstate:
+        #     reward = 1
+        # elif isstate <= 10*goalstate:
+        #     reward = 0
+        # else:
+        #     reward = -1
+
+        # reward = -abs(sgoal - sagent)  # Negative distance
+
+
         self.old_state = self.state
         #self.gravity = round(random.uniform(6, 12), 2) 
         state = np.array([mass, gravity, radangle, Fagent], dtype=np.float32)
+        #print(f"state in step: {state}")
         self.state = state
         return state, reward, True, {}
     
@@ -367,7 +405,7 @@ class Sim_InclinedPlane(SimulationInterface):
         # print(f'action: in step function \n {action[0]}')
         self.getState()
 
-        timesteps = 60
+        timesteps = 10
 
         done = False
         for _ in range(timesteps):
@@ -571,7 +609,7 @@ class Sim_InclinedPlane(SimulationInterface):
 
     # simulated step end
     def reset(self):
-        print("#############\nReset is called")
+        #print("#############\nReset is called")
         self.counter = 0
         self.timesteps = 0
         self.reward = 0
@@ -582,13 +620,13 @@ class Sim_InclinedPlane(SimulationInterface):
        
         return self.state
     
-    def current_state(self):
+    def get_current_state(self):
         #self.state = np.array([self.ball.mass, self.gravity, np.deg2rad(self.angle), self.force], dtype=np.float32)
         return self.state if self.state else self.getState()
 
-    def action_space(self):
+    def get_action_space(self):
         return self.action_space
     
-    def state_space(self):
+    def get_state_space(self):
         return self.observation_space
     
