@@ -1,4 +1,0 @@
-Complexity|MSE|Equation
-1|NaN|0.23406574
-5|NaN|abs(sqrt_abs(x2 / x0))
-7|NaN|((x2 / x4) * (x1 * x2))
