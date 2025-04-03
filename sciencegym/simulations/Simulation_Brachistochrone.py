@@ -95,6 +95,48 @@ class Sim_Brachistochrone(SimulationInterface):
         self.interactive = interactive
 
     def step(self, action):
+        # One-shot, so done is always True
+        done = True
+
+        # Scale and apply action
+        action = np.hstack(([0], action * self.max_action, [0]))
+        self.old_state = self.state.copy()
+        self.state += action
+
+        # Clip state to valid range
+        invalid_action = False
+        for ix in range(1, self.nb_points + 1):
+            if self.state[ix] <= self.y_limit:
+                self.state[ix] = self.y_limit
+                invalid_action = True
+            if self.state[ix] >= self.y_start:
+                self.state[ix] = self.y_start
+                invalid_action = True
+            if self.state[ix] > self.state[ix - 1]:
+                self.state[ix] = self.state[ix - 1]
+                invalid_action = True
+
+        # Compute traversal time
+        traversal_time = self.calculate_traversal_time(self.state, self.sample_width, self.g)
+
+        # Reward calculation
+        if traversal_time == np.inf or invalid_action:
+            reward = -200  # Big penalty for invalid trajectory
+        else:
+            time_diff = np.abs(self.optimal_t - traversal_time)
+            reward = -time_diff * 100  # Main loss signal
+
+            # Optional small bonus if new record
+            if traversal_time < self.best_t:
+                self.best_t = traversal_time
+                self.best_y_coords = self.state.copy()
+                reward += 50  # Small bonus
+
+        return self.state, reward, done, {}
+
+
+
+    def step_iterative(self, action):
         # Iteration counter
         self.iter += 1
         # Flag if we are done
@@ -214,7 +256,7 @@ class Sim_Brachistochrone(SimulationInterface):
         plt.pause(pause_time)
 
     def reset(self):
-        print("reset()")
+        #print("reset()")
         self.state = self.linear_y.copy()
 
         self.iter = 0
@@ -274,9 +316,9 @@ class Sim_Brachistochrone(SimulationInterface):
 
         return t
 
-    def current_state(self):
+    def get_current_state(self):
         return self.state
-    def state_space(self):
+    def get_state_space(self):
         return self.observation_space
-    def action_space(self):
+    def get_action_space(self):
         return self.action_space
