@@ -5,9 +5,12 @@ from sciencegym.problems.Problem_SIRV import Problem_SIRV
 from sciencegym.simulations.Simulation_SIRV import SIRVOneTimeVaccination
 
 # === User inputs ===
-csv_path = 'output_SIRV.csv'  
-input_columns = ['transmission_rate', 'recovery_rate']
-output_column = 'vaccinated'
+csv_path = 'output_inclinedplane.csv'  
+#input_columns = ['transmission_rate', 'recovery_rate']
+#output_column = 'vaccinated'
+#csv_path = 'output_SIRV.csv'
+input_columns = ['mass', 'gravity', 'angle']
+output_column = 'force'
 # ===================
 
 # Load the data
@@ -18,11 +21,12 @@ print(df.head(5))
 # Extract input and output arrays
 X = df[input_columns].values
 y = df[output_column].values
+y = y*-1
 
 # Create symbolic regressor
 model = PySRRegressor(
     model_selection="best",  
-    niterations=40,        
+    niterations=1,        
     binary_operators=["+", "-", "*", "/"],
     unary_operators=[        
     ],

@@ -11,7 +11,6 @@ from sciencegym.problems.Problem_Brachistochrone import Problem_Brachistochrone
 from sciencegym.simulations.Simulation_SIRV import SIRVOneTimeVaccination
 from sciencegym.problems.Problem_SIRV import Problem_SIRV
 
-from sciencegym.problems.problem_Basketball import Problem_Basketball
 
 from sciencegym.agents.StableBaselinesAgents.SACAgent import SACAgent
 from stable_baselines3.common.vec_env import DummyVecEnv
@@ -59,7 +58,7 @@ def evaluate(agent, env):
     return R, state, action
 
 def test_loop(agent, test_env, episodes, reward_threshold):
-    sirv_variables = ['susceptible', 'infected', 'recovered', 'vaccinated', 'transmission_rate', 'recovery_rate']
+    sirv_variables = ['mass', 'gravity', 'angle', 'force']#['susceptible', 'infected', 'recovered', 'vaccinated', 'transmission_rate', 'recovery_rate']
 
     if type(test_env) != DummyVecEnv:
         test_env = DummyVecEnv([lambda: test_env])
@@ -91,13 +90,13 @@ def test_loop(agent, test_env, episodes, reward_threshold):
     return test_rewards
 
 if __name__ == "__main__":
-    train_env = SIRVOneTimeVaccination()
-    test_env = SIRVOneTimeVaccination()
+    train_env = Sim_InclinedPlane()
+    test_env = Sim_InclinedPlane()
 
     input_dim, output_dim = get_env_dims(train_env)
 
-    train_problem = Problem_SIRV(train_env)
-    test_problem = Problem_SIRV(test_env)
+    train_problem = Problem_InclinedPlane(train_env)
+    test_problem = Problem_InclinedPlane(test_env)
 
     agent = SACAgent(input_dim, output_dim, lr=1e-4, policy='MlpPolicy')
 
