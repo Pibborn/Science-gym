@@ -1,3 +1,5 @@
+from .simulation_interface import SimulationInterface
+import math
 import abc
 import sys
 from abc import ABC
@@ -45,7 +47,7 @@ def rescale_movement(original_interval, value, to_interval=(-1, +1)):
     return c + ((d - c) / (b - a)) * (value - a)
 
 
-class EnvironmentInterface(gym.Env, ABC):
+class EnvironmentInterface(SimulationInterface, ABC):
     def __init__(self, seed=None, normalize=False, rendering=False, raw_pixels=False, walls=0, gravity=-9.80665):
         self.seed(seed)
 
@@ -113,22 +115,41 @@ class EnvironmentInterface(gym.Env, ABC):
         self.state = None
         self.old_state = None
         self.normalized_state = None
+
+        self.record_episode = []
+
         self.reset()
 
+    
+    def step_injection(self, action):
+        pass
+    
+    def alter_state(self, state):
+        return state
+
     def step(self, action=None):
+        self.step_injection(action)
+
         done = False
         # self.state = self.reset()
-        for _ in range(self.max_timesteps):
+        for t in range(self.max_timesteps):
             # self.render()
             self.old_state = self.state
             self.state, reward, done, info = self.internal_step(action)
+            
+            # NEW
+            tmp_state = self.alter_state(self.state.copy())
+            tmp_state[2] = self.initial_angle 
+            tmp_state[3] = self.initial_speed 
+            self.record_episode.append(np.append(tmp_state, t+1))
+            ###############
             action = None
             if done:
                 break
         if not done:
             done = True
-            self.reset()
-        return self.state, reward, done, info
+            #self.reset() Why?? reset is called after that anyway. With this we just losse the final state of a failed episode
+        return self.state, reward, done, {'record_episode': self.record_episode}
 
     @abc.abstractmethod
     def success(self):

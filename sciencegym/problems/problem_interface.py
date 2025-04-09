@@ -1,3 +1,7 @@
+import numpy as np
+import pandas as pd
+from sciencegym.equation import Equation
+
 from sciencegym.simulations.simulation_interface import SimulationInterface
 
 class ProblemInterface:
@@ -32,8 +36,10 @@ class ProblemInterface:
         return self.simulation
 
     # Interface methods
-    def evaluation(self, equation):
-        raise NotImplementedError()
+    def evaluation(self, candidate: Equation, data: pd.DataFrame):
+        y_true = self.solution().evaluate(data)
+        y_pred = candidate.evaluate(data)
+        return np.mean((y_true - y_pred) ** 2)
 
     def validate_context(self):
         '''

@@ -53,12 +53,13 @@ def evaluate(agent, env):
         state, reward, done, _ = env.step(action)
         terminal_state = env.buf_infos[0]["terminal_observation"]
         state = np.array(terminal_state)
+        recorded_episode = env.buf_infos[0]["record_episode"]
         R += reward
         t += 1
         reset = t == 200
         if done or reset:
             break
-    return R, state, action
+    return R, state, action, recorded_episode
 
 def test_loop(agent, test_env, episodes, reward_threshold):
     #sirv_variables = ['mass', 'gravity', 'angle', 'force']#['susceptible', 'infected', 'recovered', 'vaccinated', 'transmission_rate', 'recovery_rate']
@@ -70,11 +71,13 @@ def test_loop(agent, test_env, episodes, reward_threshold):
     test_matches = 0
 
     succesfull_states = []
+    succesfull_episodes = []
 
     for episode in range(episodes):
-        test_reward, state, action = evaluate(agent, env=test_env)
+        test_reward, state, action, recorded_episode = evaluate(agent, env=test_env)
         if test_reward >= reward_threshold:
             succesfull_states.append(state)
+            succesfull_episodes += recorded_episode
             test_matches += 1
         test_rewards.append(test_reward)
 
@@ -83,12 +86,19 @@ def test_loop(agent, test_env, episodes, reward_threshold):
     
     # Flatten each inner array and convert to a 2D array
     flattened_data = [arr.flatten() for arr in succesfull_states]
+    flattened_episodes = [arr.flatten() for arr in succesfull_episodes]
 
     # Write to CSV
     with open('output.csv', 'w', newline='') as f:
         writer = csv.writer(f)
         writer.writerow(test_env.envs[0].variables)
         writer.writerows(flattened_data)
+    
+    # Write to CSV
+    with open('output_episodes.csv', 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(test_env.envs[0].variables + ["time"])
+        writer.writerows(flattened_episodes)
     
     return test_rewards
 
