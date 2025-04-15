@@ -21,7 +21,15 @@ from sciencegym.agents.StableBaselinesAgents.SACAgent import SACAgent
 from stable_baselines3.common.vec_env import DummyVecEnv
 from gym.spaces import Dict
 
+
+import wandb
+from wandb.integration.sb3 import WandbCallback
+from stable_baselines3.common.monitor import Monitor
+
+
 import numpy as np
+
+
 
 def get_env_dims(env):
     if type(env.action_space) is not dict:
@@ -34,13 +42,22 @@ def get_env_dims(env):
         in_dim = len(env.observation_space)
     return in_dim, out_dim
 
-def train_loop(agent, train_problem, test_problem, MAX_EPISODES = 10, PRINT_EVERY = 10, VERBOSE=1, SDE=False):
+def train_loop(agent, train_problem, test_problem, MAX_EPISODES = 10, PRINT_EVERY = 10, VERBOSE=1, SDE=False, use_wandb = False):
 
     train_problem = DummyVecEnv([lambda: train_problem])
     test_problem = DummyVecEnv([lambda: test_problem])
 
     agent.agent = agent.create_model(train_problem, verbose=VERBOSE, use_sde=SDE)
-    agent.agent.learn(MAX_EPISODES, log_interval=PRINT_EVERY, eval_env=test_problem, eval_freq=PRINT_EVERY,
+
+    if use_wandb:
+        agent.agent.learn(MAX_EPISODES, log_interval=PRINT_EVERY, eval_env=test_problem, eval_freq=PRINT_EVERY,
+                             eval_log_path='agents/temp', callback=WandbCallback(
+        gradient_save_freq=1000,
+        model_save_path=f"models/{wandb.run.id}",
+        verbose=2
+    ))
+    else:
+        agent.agent.learn(MAX_EPISODES, log_interval=PRINT_EVERY, eval_env=test_problem, eval_freq=PRINT_EVERY,
                              eval_log_path='agents/temp')
     
     return None
@@ -95,17 +112,29 @@ def test_loop(agent, test_env, episodes, reward_threshold):
     return test_rewards
 
 if __name__ == "__main__":
+    use_wandb = True
+    use_monitor = True
+
+    if use_wandb:
+       # wandb.login(key="")
+        wandb.init(project="my-sac-project", sync_tensorboard=True)
+
     train_env = Sim_Lagrange()
     test_env = Sim_Lagrange()
+
 
     input_dim, output_dim = get_env_dims(train_env)
 
     train_problem = Problem_Lagrange(train_env)
     test_problem = Problem_Lagrange(test_env)
 
+    if use_monitor:
+        train_problem = Monitor(train_problem)
+        test_problem = Monitor(test_problem)
+
     agent = SACAgent(input_dim, output_dim, lr=1e-4, policy='MlpPolicy')
 
-    train_loop(agent, train_problem, test_problem, MAX_EPISODES=30000)
-    test_loop(agent, test_problem, episodes=30000, reward_threshold=0.89)
+    train_loop(agent, train_problem, test_problem, MAX_EPISODES=300, use_wandb=use_wandb)
+    test_loop(agent, test_problem, episodes=300, reward_threshold=0.89)
 
     print("Finish")
