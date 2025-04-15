@@ -14,6 +14,8 @@ from sciencegym.problems.Problem_Brachistochrone import Problem_Brachistochrone
 from sciencegym.simulations.Simulation_SIRV import SIRVOneTimeVaccination
 from sciencegym.problems.Problem_SIRV import Problem_SIRV
 
+from sciencegym.problems.Problem_Lagrange import Problem_Lagrange
+from sciencegym.simulations.Simulation_Lagrange import Sim_Lagrange
 
 from sciencegym.agents.StableBaselinesAgents.SACAgent import SACAgent
 from stable_baselines3.common.vec_env import DummyVecEnv
@@ -93,17 +95,17 @@ def test_loop(agent, test_env, episodes, reward_threshold):
     return test_rewards
 
 if __name__ == "__main__":
-    train_env = Sim_Basketball()
-    test_env = Sim_Basketball()
+    train_env = Sim_Lagrange()
+    test_env = Sim_Lagrange()
 
     input_dim, output_dim = get_env_dims(train_env)
 
-    train_problem = Problem_Basketball(train_env)
-    test_problem = Problem_Basketball(test_env)
+    train_problem = Problem_Lagrange(train_env)
+    test_problem = Problem_Lagrange(test_env)
 
     agent = SACAgent(input_dim, output_dim, lr=1e-4, policy='MlpPolicy')
 
-    train_loop(agent, train_problem, test_problem, MAX_EPISODES=2000)
-    test_loop(agent, test_problem, episodes=2000, reward_threshold=100)
+    train_loop(agent, train_problem, test_problem, MAX_EPISODES=30000)
+    test_loop(agent, test_problem, episodes=30000, reward_threshold=0.89)
 
     print("Finish")

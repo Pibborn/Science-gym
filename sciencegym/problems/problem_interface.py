@@ -37,9 +37,13 @@ class ProblemInterface:
 
     # Interface methods
     def evaluation(self, candidate: Equation, data: pd.DataFrame):
-        y_true = self.solution().evaluate(data)
         y_pred = candidate.evaluate(data)
-        return np.mean((y_true - y_pred) ** 2)
+        solution = self.solution()
+        if solution is list:
+            return [np.mean((single_solution.evaluate(data) - y_pred) ** 2) for single_solution in solution ]
+        else:
+            y_true = self.solution().evaluate(data)
+            return np.mean((y_true - y_pred) ** 2)
 
     def validate_context(self):
         '''

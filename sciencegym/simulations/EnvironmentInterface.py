@@ -139,8 +139,6 @@ class EnvironmentInterface(SimulationInterface, ABC):
             
             # NEW
             tmp_state = self.alter_state(self.state.copy())
-            tmp_state[2] = self.initial_angle 
-            tmp_state[3] = self.initial_speed 
             self.record_episode.append(np.append(tmp_state, t+1))
             ###############
             action = None

@@ -12,7 +12,7 @@ class Problem_SIRV(ProblemInterface):
     def solution(self):
         return Equation('1 - transmission_rate / recovery_rate')
 
-    def evaluate(self, candidate: Equation, data: pd.DataFrame):
-        y_true = self.solution().evaluate(data)
-        y_pred = candidate.evaluate(data)
-        return np.mean((y_true - y_pred) ** 2)
+    #def evaluate(self, candidate: Equation, data: pd.DataFrame):
+    #    y_true = self.solution().evaluate(data)
+    #    y_pred = candidate.evaluate(data)
+    #    return np.mean((y_true - y_pred) ** 2)
