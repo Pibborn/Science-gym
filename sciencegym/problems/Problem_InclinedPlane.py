@@ -7,5 +7,5 @@ class Problem_InclinedPlane(ProblemInterface):
         super().__init__(sim)
         self.variables = ['mass','gravity','angle','force']
         
-        def solution(self):
-            return Equation('mass * gravity * sin(angle)')
+    def solution(self):
+        return Equation('mass * gravity * sin(angle)')

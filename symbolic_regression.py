@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 downsample = False
 # === User inputs ===
 environments = ['SIRV', 'INCLINEDPLANE','BASKETBALL', 'LAGRANGE_L4_X', 'LAGRANGE_L4_Y' ]
-current_env = environments[3]
+current_env = environments[1]
 if current_env == 'SIRV':
     input_columns = ['transmission_rate', 'recovery_rate']
     output_column = 'vaccinated'
@@ -63,6 +63,8 @@ else:
     raise ValueError('Specified environment not found!')
 # ===================
 
+csv_path = 'output.csv'
+
 # Load the data
 df = pd.read_csv(csv_path)
 
@@ -78,14 +80,14 @@ print(f"Length of df: {len(df)}")
 # Extract input and output arrays
 X = df[input_columns].values
 y = df[output_column].values
-#y = y*-1
+y = y*-1
 
 # Create symbolic regressor
 model = PySRRegressor(
     model_selection="best",  
-    niterations=50,        
-    binary_operators=["*", "-"],
-    unary_operators=[],
+    niterations=40,        
+    binary_operators=["*"],
+    unary_operators=['sin'],
     extra_sympy_mappings={"sqrt": lambda x: x**0.5},
     progress=True,
 )

@@ -104,7 +104,7 @@ class InclinePlaneCoordinates():
         :return: [A=(x,y), B=(x2,y2), C=(x3,y3), D= (x4, y4)]
         """
         self.angle = angle # angle in deg
-        angle = degreeToRad(angle)
+        #angle = degreeToRad(angle)
         cosAngle = np.cos(angle)
         sinAngle = np.sin(angle)
         A = (-l * cosAngle / 2, l * sinAngle)
@@ -161,8 +161,10 @@ class InclinePlaneCoordinates():
 
 class Sim_InclinedPlane(SimulationInterface):
 
-    def __init__(self):
+    def __init__(self, use_analytical_simulation = True):
         super().__init__()
+
+        self.use_analytical_simulation = use_analytical_simulation
 
         self.order = None
         self.raw_pixels = False
@@ -194,12 +196,12 @@ class Sim_InclinedPlane(SimulationInterface):
         self.max_mass = 200
 
         # angles
-        self.min_angle = 5
-        self.max_angle = 70
+        self.min_angle = degreeToRad(5)
+        self.max_angle = degreeToRad(70)
 
         # forces
         min_force = 0
-        self.max_force = abs(self.max_mass * self.max_gravity) * math.sin(degreeToRad(self.max_angle))
+        self.max_force = abs(self.max_mass * self.max_gravity) * math.sin(self.max_angle)
 
         # Box2d world setup
         # Create the world
@@ -269,7 +271,7 @@ class Sim_InclinedPlane(SimulationInterface):
 
         # create inclined plane
         # no angle equal 90 degree permitted
-        self.angle = np.random.randint(self.min_angle, self.max_angle + 1)
+        self.angle = np.random.uniform(self.min_angle, self.max_angle)
         while 89.1<= self.angle <= 90.9:
             self.angle = np.random.randint(self.min_angle, self.max_angle + 1)
         
@@ -296,9 +298,6 @@ class Sim_InclinedPlane(SimulationInterface):
 
         color = random_rgb_value()
 
-        # Einkommentieren um Töne abzuspielen
-        # play_sound_from_rgb(color)
-
         self.inclinedPlane = self.world.CreateStaticBody(
             position=(0, 0),
             fixtures=fixtureDef(shape=polygonShape(vertices=coordinates[0:3])),
@@ -314,7 +313,7 @@ class Sim_InclinedPlane(SimulationInterface):
         :rtype: np.ndarray
         """
         self.mass = self.ball.mass
-        self.state = np.array([self.ball.mass, self.gravity, degreeToRad(self.angle), self.force], dtype=np.float32)
+        self.state = np.array([self.ball.mass, self.gravity, self.angle, self.force], dtype=np.float32)
         self.internal_state = self.state.copy()
 
         if self.raw_pixels:
@@ -326,27 +325,19 @@ class Sim_InclinedPlane(SimulationInterface):
         return self.state
 
     def step(self, action):
-        #print("#############\nStep is called")
-        #return self.step_no_sim(action)
-        return self.simulated_step(action)
+        if self.use_analytical_simulation:
+            return self.step_no_sim(action)
+        else:
+            return self.simulated_step(action)
 
     def step_no_sim(self, action):
-        """
-        gets reward dependant on how much percentual difference is between the observed movement or velocity
-        of the ball to the movement or velocity you would expect if the force was predicted correctly
-        with a percentual difference of delta_percent
-        :param action:
-        :return:
-        """
-        delta_percent = 0.014
-        t = 1
+        
         self.getState()
 
         Fagent = action[0]
-        #print(f"Force of agent{Fagent}")
-        degangle = self.angle
-        radangle = degreeToRad(degangle)
-        gravity = self.gravity #round(random.uniform(6, 12), 2) #self.gravity #round(random.uniform(6, 12), 2) # 9.80665
+        radangle = self.angle
+        #radangle = degreeToRad(degangle)
+        gravity = self.gravity 
         mass = self.mass
 
         Fgoal = mass * gravity * math.sin(radangle)
@@ -359,35 +350,9 @@ class Sim_InclinedPlane(SimulationInterface):
             reward += 2
 
 
-        # accgoal = gravity * math.sin(radangle) * delta_percent
-        
-        # vgoal = accgoal * t
-        
-        # sgoal = 1/2 * accgoal * t**2
-
-        # Fres = abs(Fgoal - Fagent)
-        # accagent = Fres/mass # a
-        # vagent = accagent * t
-        # sagent = 1/2 * accagent * t**2
-
-        # isstate = sagent
-        # goalstate = sgoal
-        # if 0 <= isstate <= goalstate:
-        #     reward = 2
-        # elif isstate <= 3*goalstate:
-        #     reward = 1
-        # elif isstate <= 10*goalstate:
-        #     reward = 0
-        # else:
-        #     reward = -1
-
-        # reward = -abs(sgoal - sagent)  # Negative distance
-
-
         self.old_state = self.state
-        #self.gravity = round(random.uniform(6, 12), 2) 
         state = np.array([mass, gravity, radangle, Fagent], dtype=np.float32)
-        #print(f"state in step: {state}")
+        
         self.state = state
         return state, reward, True, {}
     
@@ -405,7 +370,7 @@ class Sim_InclinedPlane(SimulationInterface):
         # print(f'action: in step function \n {action[0]}')
         self.getState()
 
-        timesteps = 10
+        timesteps = 30
 
         done = False
         for _ in range(timesteps):
@@ -415,11 +380,7 @@ class Sim_InclinedPlane(SimulationInterface):
             # action = None # todo: when action = None apply change to internal-step
             if done:
                 break
-        # if not done:
-        #    done = True
-        #   self.reset()
         state = self.state.copy()
-        #self.reset()
         done = True
         return state, reward, done, info
 
@@ -435,54 +396,17 @@ class Sim_InclinedPlane(SimulationInterface):
         velocityIterations = 8
         positionIterations = 3
 
-        def getBallVelocity():
-            vel = np.linalg.norm(self.ball.linearVelocity)
-            # print(f"ball velocity: {vel}")
-            return -1 * vel
-
-        def ball_distance_reward():
+        def smooth_distance_reward():
+            abs_delta = self.plane_cords.rel_ball_distance_form_initial_positione(self.ball.position)
+            
             if not self.plane_cords.is_ball_in_plane_bounds(self.ball.position):
                 return -10
-            rel_delta = self.plane_cords.rel_ball_distance_form_initial_positione(self.ball.position)
-            return 2 - rel_delta * 10
 
-        def better_ball_distance_reward():
-            abs_delta = self.plane_cords.abs_ball_distance_form_initial_positione(self.ball.position)
-            if not self.plane_cords.is_ball_in_plane_bounds(self.ball.position):
-                return -10
-            elif 0<= abs_delta <= 0.175:
-                return 10
-            elif 0.175 < abs_delta <= 0.35:
-                return 5
-            # straight line between (0.35, 2.5), (0.4, 1)
-            # https://www.arndt-bruenner.de/mathe/9/geradedurchzweipunkte.htm
-            elif 0.35 <= abs_delta <= 0.4:
-                return -30*abs_delta+ 13
-            else:
-                # straight line between (0.4, 1), (10, -10)
-                return -55/48* abs_delta + 35/24
-        
-        def calculate_s_depending_on_deltaPercent(delta_percent=15):
-            return 1/2 * delta_percent/100 * self.min_gravity * math.sin(self.min_angle)
-        def very_strict_reward():
-            """
-            compares movement of the ball to a bound
-            :return:
-            """
-            abs_delta = self.plane_cords.abs_ball_distance_form_initial_positione(self.ball.position)
-            if not self.plane_cords.is_ball_in_plane_bounds(self.ball.position):
-                return -10
-            goal_difference = 0.005
-            if 0 <= abs_delta <= goal_difference:
-                return 2
-            elif abs_delta <= 3 * goal_difference:
-                return 1
-            elif abs_delta <= 10 * goal_difference:
-                return 0
-            else:
-                return -1
+            # Reward peaks at 0, drops off smoothly
+            reward = max(1.0 - (abs_delta * 5), -2.0)  # Shape: near = 1.0, far = negative
+            return reward
 
-        reward = very_strict_reward()  # getBallVelocity()
+        reward = smooth_distance_reward()
 
         # If condition true the experiment has failed, in this case ball has left the plane.
         if not self.plane_cords.is_ball_in_plane_bounds(self.ball.position):
@@ -523,9 +447,14 @@ class Sim_InclinedPlane(SimulationInterface):
 
         # print(f'action: in performAction  \n {action[0]}')
         # force vector in newton, point where force is applied (0,0) = center of ball, True: impuls; False: force
-        rotatet_force_vector = rotate_vector((0, float(action[0])), degreeToRad(self.angle))
+        #rotatet_force_vector = rotate_vector((0, float(action[0])), degreeToRad(self.angle))
 
-        self.ball.ApplyForce(rotatet_force_vector, (0, 0), False)
+        rotate_force_vector = (
+            -math.sin(self.angle) * action[0],
+            math.cos(self.angle) * action[0]
+                )
+
+        self.ball.ApplyForce(rotate_force_vector, self.ball.worldCenter, wake=True)
         # self.ball.ApplyForce(rotatet_force_vector, self.ball.worldCenter, wake=True)
 
     def close(self):

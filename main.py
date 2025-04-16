@@ -111,22 +111,28 @@ def test_loop(agent, test_env, episodes, reward_threshold):
     
     return test_rewards
 
+def create_env_prob(problem_string):
+    if problem_string == "INCLINED":
+        env = Sim_InclinedPlane()
+        prob = Problem_InclinedPlane(env)
+    else:
+        raise ValueError(f"Problem string {problem_string} not defined!")
+    
+    return env, prob
+
 if __name__ == "__main__":
-    use_wandb = True
-    use_monitor = True
+    use_wandb = False
+    use_monitor = False
 
     if use_wandb:
        # wandb.login(key="")
         wandb.init(project="my-sac-project", sync_tensorboard=True)
 
-    train_env = Sim_Lagrange()
-    test_env = Sim_Lagrange()
+    train_env, train_problem = create_env_prob("INCLINED")
+    test_env, test_problem = create_env_prob("INCLINED")
 
 
     input_dim, output_dim = get_env_dims(train_env)
-
-    train_problem = Problem_Lagrange(train_env)
-    test_problem = Problem_Lagrange(test_env)
 
     if use_monitor:
         train_problem = Monitor(train_problem)
@@ -134,7 +140,7 @@ if __name__ == "__main__":
 
     agent = SACAgent(input_dim, output_dim, lr=1e-4, policy='MlpPolicy')
 
-    train_loop(agent, train_problem, test_problem, MAX_EPISODES=300, use_wandb=use_wandb)
-    test_loop(agent, test_problem, episodes=300, reward_threshold=0.89)
+    train_loop(agent, train_problem, test_problem, MAX_EPISODES=10000, use_wandb=use_wandb)
+    test_loop(agent, test_problem, episodes=1000, reward_threshold=-0.01)
 
     print("Finish")
