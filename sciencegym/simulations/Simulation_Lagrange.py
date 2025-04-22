@@ -138,7 +138,7 @@ class Sim_Lagrange(SimulationInterface):
             """
             length = np.linalg.norm(pos_2 - pos_1)
             direction = (pos_2 - pos_1) / length
-            return GRAVITAIONAL_CONSTANT * mass_1 * mass_2 * direction / (2*length)
+            return GRAVITAIONAL_CONSTANT * mass_1 * mass_2 * direction / (length*2)
 
         list_of_masses = np.array([body.mass for body in self.bodies])
         list_of_positions = x_vals[:6].reshape(-1, 2)

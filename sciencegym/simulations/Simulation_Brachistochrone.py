@@ -5,10 +5,12 @@ import numpy as np
 from gym.spaces import Box
 from scipy.interpolate import pchip
 
+from scipy.interpolate import interp1d
+
 class Sim_Brachistochrone(SimulationInterface):
     
     def __init__(self, x_start=0, x_end=np.pi, y_start=0, y_end=-2, step_per_eps=1000,
-                 nb_points=10, g=9.80665, verbose=True, interactive=False,
+                 nb_points=40, g=9.80665, verbose=True, interactive=False,
                  testing=False, nb_test_besttimes=100):
         super().__init__()
 
@@ -94,49 +96,11 @@ class Sim_Brachistochrone(SimulationInterface):
         self.fig.canvas.blit(self.fig.bbox)
         self.interactive = interactive
 
+    
+
+
+
     def step(self, action):
-        # One-shot, so done is always True
-        done = True
-
-        # Scale and apply action
-        action = np.hstack(([0], action * self.max_action, [0]))
-        self.old_state = self.state.copy()
-        self.state += action
-
-        # Clip state to valid range
-        invalid_action = False
-        for ix in range(1, self.nb_points + 1):
-            if self.state[ix] <= self.y_limit:
-                self.state[ix] = self.y_limit
-                invalid_action = True
-            if self.state[ix] >= self.y_start:
-                self.state[ix] = self.y_start
-                invalid_action = True
-            if self.state[ix] > self.state[ix - 1]:
-                self.state[ix] = self.state[ix - 1]
-                invalid_action = True
-
-        # Compute traversal time
-        traversal_time = self.calculate_traversal_time(self.state, self.sample_width, self.g)
-
-        # Reward calculation
-        if traversal_time == np.inf or invalid_action:
-            reward = -200  # Big penalty for invalid trajectory
-        else:
-            time_diff = np.abs(self.optimal_t - traversal_time)
-            reward = -time_diff * 100  # Main loss signal
-
-            # Optional small bonus if new record
-            if traversal_time < self.best_t:
-                self.best_t = traversal_time
-                self.best_y_coords = self.state.copy()
-                reward += 50  # Small bonus
-
-        return self.state, reward, done, {}
-
-
-
-    def step_iterative(self, action):
         # Iteration counter
         self.iter += 1
         # Flag if we are done
@@ -256,6 +220,40 @@ class Sim_Brachistochrone(SimulationInterface):
         plt.pause(pause_time)
 
     def reset(self):
+        """
+        Reset the environment to a slightly perturbed version of the cycloid
+        for better exploration.
+        """
+        self.iter = 0
+
+        # Get the true brachistochrone (cycloid) y-values at self.x_coords
+        true_x, true_y = self.calculate_brachistochrone(self.R, self.y_end, len(self.x_coords))
+        true_interp = pchip(true_x, true_y)
+        cycloid_y = true_interp(self.x_coords)
+
+        # Add a little bit of noise for exploration
+        noise_strength = 0.05 * abs(self.y_end - self.y_start)
+        noise = np.random.uniform(-noise_strength, noise_strength, size=len(cycloid_y))
+
+        # Clamp start and end to remain fixed (no noise on endpoints)
+        noise[0] = 0
+        noise[-1] = 0
+
+        # Final state = true cycloid + noise
+        self.state = cycloid_y + noise
+
+        # Ensure it stays within bounds
+        self.state = np.clip(self.state, self.y_limit, self.y_start)
+
+        # Optional: enforce monotonically decreasing shape
+        for i in range(1, len(self.state)):
+            if self.state[i] > self.state[i - 1]:
+                self.state[i] = self.state[i - 1]
+
+        return self.state
+
+
+    def reset2(self):
         #print("reset()")
         self.state = self.linear_y.copy()
 

@@ -176,7 +176,7 @@ A
         """
         y_pred = candidate.evaluate(data)
         solution = self.solution()
-        if solution is list:
+        if type(solution) is list:
             return [np.mean((single_solution.evaluate(data) - y_pred) ** 2) for single_solution in solution ]
         else:
             y_true = self.solution().evaluate(data)

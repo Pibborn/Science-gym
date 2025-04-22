@@ -139,7 +139,7 @@ class EnvironmentInterface(SimulationInterface, ABC):
             
             # NEW
             tmp_state = self.alter_state(self.state.copy())
-            self.record_episode.append(np.append(tmp_state, t+1))
+            self.record_episode.append(np.append(tmp_state, (t+1) * TIME_STEP))
             ###############
             action = None
             if done:

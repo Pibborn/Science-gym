@@ -11,6 +11,8 @@ import numpy as np
 from gym.utils import seeding
 from .EnvironmentInterface import EnvironmentInterface, rescale_movement
 
+TARGET_FPS = 60
+TIME_STEP = 1.0 / TARGET_FPS
 
 class Ball:
     def __init__(self, world, x, y, angle, velocity, radius=1.0, density=1.0, delta_x=0, delta_y=0):
@@ -166,7 +168,7 @@ class Sim_Basketball(EnvironmentInterface):
     # Alter the state for episode recording such that the intial velocity and angle is hardcoded to the state
     def alter_state(self, state):
         state[2] = self.initial_angle 
-        state[3] = self.initial_speed 
+        state[3] = self.initial_speed
         return state
 
     def success(self):

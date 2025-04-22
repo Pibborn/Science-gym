@@ -346,7 +346,7 @@ class Sim_InclinedPlane(SimulationInterface):
         reward = - (error / self.max_force) ** 2
 
         # Optional precision bonus
-        if abs(error) < 0.1:
+        if False and abs(error) < 0.1:
             reward += 2
 
 

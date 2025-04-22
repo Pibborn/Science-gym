@@ -8,6 +8,6 @@ class Problem_Lagrange(ProblemInterface):
                           'bod_3_posX', 'bod_3_posY']
 
     def solution(self):
-        return Equation('3**(1/2) / 2 * distance_b1_b2')
+        return [Equation('3**(1/2) / 2 * distance_b1_b2'), Equation('distance_b1_b2 / 2 - d')]
 
     

@@ -40,7 +40,9 @@ class Ball:
         position1 = self.ball.position[0]
         position2 = self.ball.position[1]
         angle = self.ball.angle
-        velocity = float(self.ball.angularVelocity)
+        #velocity = float(self.ball.angularVelocity)
+        vx, vy = self.ball.linearVelocity
+        velocity = np.linalg.norm([vx, vy])
         return np.array([position1, position2, angle, velocity, self.radius, self.density])
 
     def get_world(self):
@@ -134,11 +136,11 @@ class BasketballEnvironment(EnvironmentInterface):
 
         # first, we have the ball information: x coordinate, y coordinate, angle, velocity, radius/size, density
         # then, we have the basket info: x coordinate, y coordinate (both of the center of the ring), radius of the ring
-        self.observation_space = Box(low=np.array([0, 0, - np.pi, -10, 0.5, 4, 0, 0, 0.5] if not self.normalize
-                                                  else [0, 0, -1, -1, 0, 0, 0, 0, 0]),
-                                     high=np.array([self.world_width, self.world_height, np.pi, 10, 1.5, 6,
-                                                    self.world_width, self.world_height, 3] if not self.normalize
-                                                   else [1 for _ in range(9)]))
+       # self.observation_space = Box(low=np.array([0, 0, - np.pi, -10, 0.5, 4, 0, 0, 0.5] if not self.normalize
+       #                                           else [0, 0, -1, -1, 0, 0, 0, 0, 0]),
+       #                              high=np.array([self.world_width, self.world_height, np.pi, 10, 1.5, 6,
+       #                                             self.world_width, self.world_height, 3] if not self.normalize
+       #                                            else [1 for _ in range(9)]))
         self.observation_space = Box(low=np.array([0, 0, - np.pi, -10, 0.5, 4, 0, 0, 0.5] if not self.normalize
                                                   else [0, 0, -1, -1, 0, 0, 0, 0, 0]),
                                      high=np.array([self.world_width, self.world_height, np.pi, 10, 1.5, 6,

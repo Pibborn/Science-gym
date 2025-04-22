@@ -21,6 +21,9 @@ from gym.spaces import Dict
 
 import numpy as np
 
+import wandb
+from wandb.integration.sb3 import WandbCallback
+
 def get_env_dims(env):
     if type(env.action_space) is not dict:
         out_dim = int(env.action_space.shape[0])
@@ -103,6 +106,13 @@ def test_loop(agent, test_env, episodes, reward_threshold):
     return test_rewards
 
 if __name__ == "__main__":
+    use_wandb = True
+    use_monitor = False
+
+    if use_wandb:
+       # wandb.login(key="")
+        wandb.init(project="science-gym", sync_tensorboard=True)
+
     train_env = Sim_Basketball()
     test_env = Sim_Basketball()
 

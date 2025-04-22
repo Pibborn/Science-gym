@@ -20,41 +20,53 @@ import matplotlib.pyplot as plt
 downsample = False
 # === User inputs ===
 environments = ['SIRV', 'INCLINEDPLANE','BASKETBALL', 'LAGRANGE_L4_X', 'LAGRANGE_L4_Y' ]
-current_env = environments[1]
+current_env = environments[2]
 if current_env == 'SIRV':
     input_columns = ['transmission_rate', 'recovery_rate']
     output_column = 'vaccinated'
     csv_path = 'output_SIRV.csv'
+
+    downsample = True
+    every_n_row = 70
+
     env = SIRVOneTimeVaccination()
     problem = Problem_SIRV(env)
 elif current_env == 'INCLINEDPLANE':
     csv_path = 'output_inclinedplane.csv' 
     input_columns = ['mass', 'gravity', 'angle']
     output_column = 'force'
+
+    downsample = True
+    every_n_row = 10
+
     env = Sim_InclinedPlane()
     problem = Problem_InclinedPlane(env)
 elif current_env == 'BASKETBALL':
     csv_path = 'output_episodes.csv' 
-    input_columns = ['velocity', 'angle', 'time', 'g']
+    #input_columns = ['velocity', 'angle', 'time', 'g']
+    input_columns = ['velocity_sin_angle', 'time', 'g']
     output_column = 'ball_y'
 
-    downsample = True
+    downsample = False
     every_n_row = 10
 
     env = Sim_Basketball()
     problem = Problem_Basketball(env)
 elif current_env == 'LAGRANGE_L4_Y':
+    
     csv_path = 'output_Lagrange.csv' 
     input_columns = ['distance_b1_b2']#['body_1_mass', 'body_2_mass', 'distance_b1_b2', 'bod_3_posX', 'bod_3_posY']
     output_column = 'bod_3_posY'
-
+    downsample = True
+    every_n_row = 10
     env = Sim_Lagrange()
     problem = Problem_Lagrange(env)
 elif current_env == 'LAGRANGE_L4_X':
+    
     csv_path = 'output_Lagrange.csv' 
     input_columns = ['distance_b1_b2', 'd']#['body_1_mass', 'body_2_mass', 'distance_b1_b2', 'bod_3_posX', 'bod_3_posY']
     output_column = 'bod_3_posX'
-    downsample = True
+    downsample = False
     every_n_row = 3
 
     env = Sim_Lagrange()
@@ -63,14 +75,51 @@ else:
     raise ValueError('Specified environment not found!')
 # ===================
 
-csv_path = 'output.csv'
+#csv_path = 'output.csv'
 
 # Load the data
 df = pd.read_csv(csv_path)
+df['g'] = 9.80665
+
+
+if current_env.startswith('BASKETBALL'):
+    def trim(group):
+            cutoff = int(len(group) * 0.5)
+            return group.iloc[:cutoff]
+
+    df['episode'] = (df['time'] < df['time'].shift()).cumsum()
+    df = df[df['episode'] < 3]
+    df = df.groupby('episode', group_keys=False).apply(trim)
+    df = df.reset_index(drop=True)
+
+    def normalize_ball_y(df, col='ball_y'):
+        df = df.copy()
+        offset = df[col].iloc[0]
+        df[col] = df[col] - offset
+        return df
+
+    def normalize_ball_y_per_episode(df, time_col='time', col='ball_y'):
+        df = df.copy()
+        df['episode'] = (df[time_col] < df[time_col].shift()).cumsum()
+
+        def normalize(group):
+            offset = group[col].iloc[0]
+            group[col] = group[col] - offset
+            return group
+
+        normalized_df = df.groupby('episode', group_keys=False).apply(normalize)
+        return normalized_df.reset_index(drop=True)
+
+    df = normalize_ball_y_per_episode(df)
+
+    df['velocity_sin_angle'] = df['velocity'] * np.sin(df['angle'])
+
+
 
 if current_env.startswith('LAGRANGE'):
     df['d'] = (df['body_2_mass'] /(df['body_1_mass'] + df['body_2_mass']))  * df['distance_b1_b2']
-
+    #print(df['d'].mean())
+    #exit()
 # Downsample the number of rows
 if downsample:
     df = df.iloc[::every_n_row].reset_index(drop=True)
@@ -80,14 +129,14 @@ print(f"Length of df: {len(df)}")
 # Extract input and output arrays
 X = df[input_columns].values
 y = df[output_column].values
-y = y*-1
+#y = y*-1
 
 # Create symbolic regressor
 model = PySRRegressor(
     model_selection="best",  
     niterations=40,        
-    binary_operators=["*"],
-    unary_operators=['sin'],
+    binary_operators=["*", "-"],
+    unary_operators=[],#"sin", "square"],
     extra_sympy_mappings={"sqrt": lambda x: x**0.5},
     progress=True,
 )
@@ -100,9 +149,10 @@ print(model.equations_)
 for _, row in model.equations_.iterrows():
     expr = row['sympy_format']
     eq = Equation(expr)
+    solutions = problem.solution()
     score = problem.evaluation(eq, data=df)
     if type(score) is list:
         for i, s in enumerate(score):
-            print(f"Equation: {eq}, Score: {score}, Equality: {eq == problem.solution()}")
+            print(f"Equation: {eq}, Solution{solutions[i]}, Score: {score}, Equality: {eq == solutions[i]}")
     else:
         print(f"Equation: {eq}, Score: {score}, Equality: {eq == problem.solution()}")

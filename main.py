@@ -115,6 +115,15 @@ def create_env_prob(problem_string):
     if problem_string == "INCLINED":
         env = Sim_InclinedPlane()
         prob = Problem_InclinedPlane(env)
+    elif problem_string == "LAGRANGE":
+        env = Sim_Lagrange()
+        prob = Problem_Lagrange(env)
+    elif problem_string == "SIRV":
+        env = SIRVOneTimeVaccination()
+        prob = Problem_SIRV(env)
+    elif problem_string == "BRACHIS":
+        env = Sim_Brachistochrone()
+        prob = Problem_Brachistochrone(env)
     else:
         raise ValueError(f"Problem string {problem_string} not defined!")
     
@@ -126,10 +135,11 @@ if __name__ == "__main__":
 
     if use_wandb:
        # wandb.login(key="")
-        wandb.init(project="my-sac-project", sync_tensorboard=True)
+        wandb.init(project="science-gym", sync_tensorboard=True)
 
-    train_env, train_problem = create_env_prob("INCLINED")
-    test_env, test_problem = create_env_prob("INCLINED")
+    problem_string = 'BRACHIS'
+    train_env, train_problem = create_env_prob(problem_string)
+    test_env, test_problem = create_env_prob(problem_string)
 
 
     input_dim, output_dim = get_env_dims(train_env)
@@ -140,7 +150,7 @@ if __name__ == "__main__":
 
     agent = SACAgent(input_dim, output_dim, lr=1e-4, policy='MlpPolicy')
 
-    train_loop(agent, train_problem, test_problem, MAX_EPISODES=10000, use_wandb=use_wandb)
-    test_loop(agent, test_problem, episodes=1000, reward_threshold=-0.01)
+    train_loop(agent, train_problem, test_problem, MAX_EPISODES=40000, use_wandb=use_wandb)
+    test_loop(agent, test_problem, episodes=50000, reward_threshold=-0.01)
 
     print("Finish")
