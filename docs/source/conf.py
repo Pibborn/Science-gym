@@ -17,7 +17,7 @@ release = '0.1'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ['myst_parser', 'sphinx.ext.githubpages', 'sphinx.ext.autodoc']
+extensions = ['myst_parser', 'sphinx.ext.githubpages', 'sphinx.ext.autodoc', 'sphinx_design']
 autodoc_mock_imports = ['stable_baselines3', 'gym', 'numpy', 'matplotlib', 'pandas', 'pygame', 'torch']
 templates_path = ['_templates']
 exclude_patterns = []
@@ -29,3 +29,11 @@ exclude_patterns = []
 
 html_theme = 'shibuya'
 html_static_path = ['_static']
+html_theme_options = {
+    "nav_links": [
+        {
+            "title": "Quickstart",
+            "url": "/usage/quickstart"
+        },
+    ]
+}

@@ -3,54 +3,64 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+:layout: landing
+
 science-gym
 =========================
 
 .. rst-class:: lead
 
-Science-gym is a python library to develop and test automated discovery algorithms based on AI.
+Science-gym is a python library to develop and test automated discovery algorithms based on AI. 
+
+.. container:: buttons
+
+   :doc:`Documentation <sciencegym>`   `Github <https://github.com/pibborn/Science-gym>`_
 
 .. grid:: 1 1 2 3
-    :gutter: 2
-    :padding: 0
-    :class-row: surface
+   :gutter: 2
+   :padding: 0
+   :class-row: surface
 
-    .. grid-item-card:: :octicon:`star` Installation
-       :link: /usage/installation
+   .. grid-item-card:: :octicon:`star` Installation
+      :link: usage/installation
+      :link-type: doc
 
-        A visually stunning and modern design that makes your documentation
-        look professional and appealing.
+      Install Science‑gym.
 
-    .. grid-item-card:: :octicon:`zap` Quickstart guide
-       :link: /usage/quickstart
+   .. grid-item-card:: :octicon:`zap` Quick‑start guide
+      :link: usage/quickstart
+      :link-type: doc
 
-        Read through the quickstart guide to understand the main concepts and write your first learning script.
+      Read through the quick‑start guide to understand the main concepts and
+      write your first learning script.
 
-    .. grid-item-card:: :octicon:`earth` See available problems 
-       :link: /sciencegym.problems
+   .. grid-item-card:: :octicon:`globe` Available problems
+      :link: sciencegym.problems
+      :link-type: doc
 
-        Read through the available problems for automated discovery available in science-gym.
+      Explore the ready‑made discovery problems bundled with Science‑gym.
 
-    .. grid-item-card:: :octicon:`paintbrush` Create a new problem
-        :link: /usage/problems.md
+   .. grid-item-card:: :octicon:`paintbrush` Create a new problem
+      :link: usage/problems
+      :link-type: doc
 
-        Read the guide to create a new discovery problem
+      Follow the guide to define a brand‑new problem.
 
-    .. grid-item-card:: :octicon:`beaker` Jupyter Integration
-        :link: /extensions/nbsphinx/
+   .. grid-item-card:: :octicon:`beaker` Under construction
+      :link: extensions/nbsphinx
 
-        Great CSS/UI for lots of Jupyter related extensions, enhance your
-        AI documentation.
+      This is under construction.
 
-    .. grid-item-card:: :octicon:`browser` Multiple Layouts
-        :link: /customisation/layouts/
+   .. grid-item-card:: :octicon:`browser` Under construction
+      :link: customisation/layouts
 
-        Layouts of landing page, simple one page, and three-column
-        documentation page.
+      This is under construction.
 
 .. toctree::
+   :hidden:
    :maxdepth: 2
-   :caption: Contents:
-   
+   :caption: Contents
 
-
+   usage/installation
+   usage/quickstart
+   usage/problems
