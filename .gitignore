@@ -4,3 +4,5 @@ results/
 agents/
 .DS_Store
 __pycache__/
+docs/build/
+docs/source/*.rst
