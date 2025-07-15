@@ -10,7 +10,7 @@ class ProblemInterface:
     High‑level wrapper that turns a domain‑specific
     :class:`~sciencegym.simulation.base.SimulationInterface`
     into a Gym‑style environment component.
-A
+
     The class does **not** inherit from :class:`gym.Env` on purpose;
     instead it exposes Gym‑compatible *spaces* so that downstream
     wrappers (or RL frameworks such as Stable‑Baselines3) can use
