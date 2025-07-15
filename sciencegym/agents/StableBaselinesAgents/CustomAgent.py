@@ -2,7 +2,7 @@ import gym
 
 from stable_baselines.common.policies import FeedForwardPolicy
 from stable_baselines3 import A2C, SAC, HerReplayBuffer
-from agents.StableBaselinesAgents.StableBaselinesAgent import StableBaselinesAgent
+from sciencegym.agents.StableBaselinesAgents.StableBaselinesAgent import StableBaselinesAgent
 
 # Custom MLP policy of three layers of size 128 each
 class CustomPolicy(FeedForwardPolicy):

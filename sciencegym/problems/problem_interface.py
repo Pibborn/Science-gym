@@ -10,7 +10,7 @@ class ProblemInterface:
     High‑level wrapper that turns a domain‑specific
     :class:`~sciencegym.simulation.base.SimulationInterface`
     into a Gym‑style environment component.
-
+A
     The class does **not** inherit from :class:`gym.Env` on purpose;
     instead it exposes Gym‑compatible *spaces* so that downstream
     wrappers (or RL frameworks such as Stable‑Baselines3) can use
@@ -21,7 +21,7 @@ class ProblemInterface:
     sim : SimulationInterface
         Concrete simulation that implements at least:
         ``step``, ``reset``, ``get_state_space`` and
-        ``get_action_space``.  See :pyattr:`simulation`
+        ``get_action_space``.  See :py:attr:`simulation`
         attribute below for details.
 
     Attributes
@@ -89,7 +89,7 @@ class ProblemInterface:
         ----------
         action : numpy.ndarray
             Experimental action to be performed.  Its datatype and shape must conform to
-            :pyattr:`action_space`, which is delegated to the underlying
+            :py:attr:`action_space`, which is delegated to the underlying
             simulation.
 
         Returns
@@ -162,7 +162,8 @@ class ProblemInterface:
 
     # Interface methods
     def evaluation(self, candidate: Equation, data: pd.DataFrame):
-        """Performs evaluation of the candidate solution to the current Problem.
+        """
+        Performs evaluation of the candidate solution to the current Problem.
         Since :class:`Problem`s might have more than one solution, this is evaluated
         against all available solutions.
 

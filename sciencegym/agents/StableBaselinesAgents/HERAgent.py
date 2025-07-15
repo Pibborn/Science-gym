@@ -1,6 +1,6 @@
 from stable_baselines3 import HER, SAC, HerReplayBuffer
 
-from agents.StableBaselinesAgents.StableBaselinesAgent import StableBaselinesAgent
+from sciencegym.agents.StableBaselinesAgents.StableBaselinesAgent import StableBaselinesAgent
 
 
 class HERAgent(StableBaselinesAgent):

@@ -1,6 +1,4 @@
 import sys
-sys.path.append("/Users/lennartbaur/Documents/Arbeit/ScienceGym/Repo/science-gym")
-
 import time
 
 import stable_baselines3

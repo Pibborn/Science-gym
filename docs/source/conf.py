@@ -5,9 +5,10 @@
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+from pathlib import Path
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 project = 'science-gym'
 copyright = '2025, Mattia Cerrato'
@@ -20,7 +21,9 @@ release = '0.1'
 extensions = ['myst_parser', 'sphinx.ext.githubpages', 'sphinx.ext.autodoc', 
               'sphinx.ext.napoleon', 'sphinx_design']
 autosummary_generate = True
-autodoc_mock_imports = ['stable_baselines3', 'gym', 'numpy', 'matplotlib', 'pandas', 'pygame', 'torch']
+autodoc_mock_imports = ['sympy', 'scipy', 'Box2D', 'cv2', 'pygame', 'pyglet',
+    'stable_baselines3', 'stable_baselines', 'gym', 'gymnasium', 'torch',
+    'pgu', 'PyQt4', 'numpy', 'matplotlib', 'pandas', 'ScaleEnvironment']
 templates_path = ['_templates']
 exclude_patterns = []
 

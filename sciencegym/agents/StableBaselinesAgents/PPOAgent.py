@@ -1,6 +1,6 @@
 from stable_baselines3 import PPO, HerReplayBuffer
 
-from agents.StableBaselinesAgents.StableBaselinesAgent import StableBaselinesAgent
+from sciencegym.agents.StableBaselinesAgents.StableBaselinesAgent import StableBaselinesAgent
 
 class PPOAgent(StableBaselinesAgent):
     def __init__(self, input_dim, output_dim, lr=1e-4, policy='CnnPolicy'):

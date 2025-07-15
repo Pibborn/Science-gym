@@ -1,6 +1,6 @@
 from stable_baselines3 import A2C
 
-from agents.StableBaselinesAgents.StableBaselinesAgent import StableBaselinesAgent
+from sciencegym.agents.StableBaselinesAgents.StableBaselinesAgent import StableBaselinesAgent
 
 
 class A2CAgent(StableBaselinesAgent):
