@@ -64,3 +64,5 @@ Science-gym is a python library to develop and test automated discovery algorith
    usage/installation
    usage/quickstart
    usage/problems
+   
+   modules
