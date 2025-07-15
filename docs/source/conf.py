@@ -17,7 +17,9 @@ release = '0.1'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ['myst_parser', 'sphinx.ext.githubpages', 'sphinx.ext.autodoc', 'sphinx_design']
+extensions = ['myst_parser', 'sphinx.ext.githubpages', 'sphinx.ext.autodoc', 
+              'sphinx.ext.napoleon', 'sphinx_design']
+autosummary_generate = True
 autodoc_mock_imports = ['stable_baselines3', 'gym', 'numpy', 'matplotlib', 'pandas', 'pygame', 'torch']
 templates_path = ['_templates']
 exclude_patterns = []
