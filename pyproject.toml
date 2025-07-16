@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "science-gym"
+version = "0.3.0"
+description = "Gym‑compatible scientific experimentation environments"
+readme = "README.md"
+license = "GPL-3.0-only"
+authors = [
+  {name = "Mattia Cerrato", email = "matcerrato@gmail.com"},
+]
+requires-python = ">=3.9"
+dependencies = [
+  "gymnasium>=1.1",
+  "numpy>=1.23",
+  "pandas>=2.2",
+  "gym==0.26.2",
+  "wandb>=0.21.0",
+  "tensorboard>=2.19",
+  "stable-baselines3==1.2.0",
+  "torch>=2.2",
+  "pygame>=2.6",
+  "box2d-py",
+  "opencv-python",
+  "sympy>=1.13",
+  "pysr>=1.5"
+]
+
+[project.optional-dependencies]
+rl   = ["stable-baselines3==1.2", "torch>=2.2"]
+gui  = ["pygame>=2.6", "box2d-py", "opencv-python"]
+sym  = ["sympy>=1.13", "pysr>=1.5"]
+
+[project.urls]
+Source = "https://github.com/Pibborn/science-gym"
+Issues = "https://github.com/Pibborn/science-gym/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["sciencegym*"]
+exclude = ["outputs*", "results*"]
