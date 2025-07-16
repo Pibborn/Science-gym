@@ -1,0 +1,7 @@
+sciencegym.simulations.sirv\_compartments module
+================================================
+
+.. automodule:: sciencegym.simulations.sirv_compartments
+   :members:
+   :undoc-members:
+   :show-inheritance:

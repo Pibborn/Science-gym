@@ -1,0 +1,7 @@
+sciencegym.problems.Problem\_Lagrange module
+============================================
+
+.. automodule:: sciencegym.problems.Problem_Lagrange
+   :members:
+   :undoc-members:
+   :show-inheritance:

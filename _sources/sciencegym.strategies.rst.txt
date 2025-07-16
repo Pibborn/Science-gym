@@ -1,0 +1,10 @@
+sciencegym.strategies package
+=============================
+
+Module contents
+---------------
+
+.. automodule:: sciencegym.strategies
+   :members:
+   :undoc-members:
+   :show-inheritance:

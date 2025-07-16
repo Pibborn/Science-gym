@@ -1,0 +1,7 @@
+sciencegym.agents.StableBaselinesAgents.HERAgent module
+=======================================================
+
+.. automodule:: sciencegym.agents.StableBaselinesAgents.HERAgent
+   :members:
+   :undoc-members:
+   :show-inheritance:

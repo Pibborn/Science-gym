@@ -1,0 +1,7 @@
+sciencegym.simulations.SIRVBase module
+======================================
+
+.. automodule:: sciencegym.simulations.SIRVBase
+   :members:
+   :undoc-members:
+   :show-inheritance:

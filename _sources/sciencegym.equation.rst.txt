@@ -1,0 +1,7 @@
+sciencegym.equation module
+==========================
+
+.. automodule:: sciencegym.equation
+   :members:
+   :undoc-members:
+   :show-inheritance:
