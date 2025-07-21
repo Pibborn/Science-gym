@@ -108,7 +108,7 @@ class Basket:
 
 class Sim_Basketball(EnvironmentInterface):
     def __init__(self, seed=None, normalize=False, rendering=True, raw_pixels=False, random_ball_size=True,
-                 random_density=False, random_basket=False, random_ball_position=True, walls=0):
+                 random_density=False, random_basket=False, random_ball_position=True, walls=0, context=0):
         # should the size of the ball be fixed or random?
         self.random_ball_size = random_ball_size
         # should the density of the ball be fixed or random?
@@ -117,6 +117,7 @@ class Sim_Basketball(EnvironmentInterface):
         self.random_basket = random_basket
         # start location of the basketball random or not?
         self.random_ball_position = random_ball_position
+        self.context = context
 
         # create Environment with interface
         super().__init__(seed=seed, normalize=normalize, rendering=rendering, raw_pixels=raw_pixels, walls=walls)
@@ -187,17 +188,23 @@ class Sim_Basketball(EnvironmentInterface):
     def getReward(self):
         # ball in net --> stop and give maximum reward
         if self.success():
-            return 100
+            r = 100
         # ball either touched the basket right now or before --> reward = 10
         elif len(self.basket.basket.contacts) > 0 or self.touched_the_basket:
             if not self.touched_the_basket:
                 self.touched_the_basket = True
-            return 10
+            r = 10
         # ball outside of the field --> reward should be negative
         elif self.testFailed():
-            return -10
+            r = -10
         else:
-            return 0
+            r = 0
+        if self.context == 0:
+            return r
+        elif self.context == 1:
+            return r + np.random.normal(1, 10)
+        elif self.context == 2:
+            return r * np.random.binomial(1, 0.1)
 
     def testFailed(self):
         ball_x, ball_y = self.updateState()[0:2]

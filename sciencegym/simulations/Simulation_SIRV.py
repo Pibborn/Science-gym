@@ -171,10 +171,12 @@ class SIRVEnvironment(SimulationInterface, ABC):
 
 
 class SIRVOneTimeVaccination(SIRVEnvironment):
-    def __init__(self, population=10_000, record_training: bool = False, recording_interval: int = 150):
+    def __init__(self, population=10_000, record_training: bool = False, recording_interval: int = 150,
+                 context: int = 0):
         super().__init__(0, 0, population)
         self.visualize_training: bool = record_training
         self.recorded_episodes: list = []
+        self.context = context
         self.recording_interval = recording_interval  # how many steps there should be between recordings
 
     def apply_action(self, action: np.ndarray):
@@ -195,7 +197,14 @@ class SIRVOneTimeVaccination(SIRVEnvironment):
 
     def get_reward(self):
         # calculate reward according to distance from one-to-one infection rate
-        return -abs(self.SIRV_model.infected - self.initial_infected) / self.initial_infected * 100
+        if self.context == 0:
+            return -abs(self.SIRV_model.infected - self.initial_infected) / self.initial_infected * 100
+        elif self.context == 1:
+            return -abs(self.SIRV_model.infected - self.initial_infected) / self.initial_infected * 100 + np.random.normal(0, 10)
+        elif self.context == 2:
+            return (-abs(self.SIRV_model.infected - self.initial_infected) / self.initial_infected * 100) * np.random.binomial(1, 0.1)
+
+
 
     def is_done(self) -> bool:
         return True

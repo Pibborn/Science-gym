@@ -5,7 +5,7 @@ from sciencegym.simulations.Simulation_InclinedPlane import Sim_InclinedPlane
 from sciencegym.problems.Problem_InclinedPlane import Problem_InclinedPlane
 
 from sciencegym.problems.Problem_Basketball import Problem_Basketball
-from sciencegym.simulations.Simulaton_Basketball import Sim_Basketball
+from sciencegym.simulations.Simulation_Basketball import Sim_Basketball
 
 from sciencegym.simulations.Simulation_Brachistochrone import Sim_Brachistochrone
 from sciencegym.problems.Problem_Brachistochrone import Problem_Brachistochrone
@@ -56,9 +56,12 @@ def evaluate(agent, env):
         action, _ = agent.agent.predict(state, deterministic=True)
         state, reward, done, _ = env.step(action)
         terminal_state = env.buf_infos[0]["terminal_observation"]
-        print(env.buf_infos)
         state = np.array(terminal_state)
-        recorded_episode = env.buf_infos[0]["record_episode"]
+        try:
+            recorded_episode = env.buf_infos[0]["record_episode"]
+        except KeyError:
+            # environment doesn't save full episodes
+            recorded_episode = np.array([np.nan])
         R += reward
         t += 1
         reset = t == 200
@@ -115,15 +118,15 @@ if __name__ == "__main__":
        # wandb.login(key="")
         wandb.init(project="science-gym", sync_tensorboard=True)
 
-    train_env = Sim_Basketball()
-    test_env = Sim_Basketball()
+    train_env = Sim_Lagrange(context=2)
+    test_env = Sim_Lagrange(context=2)
 
     input_dim, output_dim = get_env_dims(train_env)
 
-    #train_problem = Problem_Lagrange(train_env)
-    #test_problem = Problem_Lagrange(test_env)
-    train_problem = Problem_Basketball(train_env)
-    test_problem = Problem_Basketball(test_env)
+    train_problem = Problem_Lagrange(train_env)
+    test_problem = Problem_Lagrange(test_env)
+    #train_problem = Problem_Basketball(train_env)
+    #test_problem = Problem_Basketball(test_env)
 
     agent = SACAgent(input_dim, output_dim, lr=1e-4, policy='MlpPolicy')
 
