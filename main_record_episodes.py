@@ -1,6 +1,5 @@
 import sys
 import csv
-sys.path.append("/Users/lennartbaur/Documents/Arbeit/ScienceGym/Repo/science-gym")
 
 from sciencegym.simulations.Simulation_InclinedPlane import Sim_InclinedPlane
 from sciencegym.problems.Problem_InclinedPlane import Problem_InclinedPlane
@@ -14,6 +13,8 @@ from sciencegym.problems.Problem_Brachistochrone import Problem_Brachistochrone
 from sciencegym.simulations.Simulation_SIRV import SIRVOneTimeVaccination
 from sciencegym.problems.Problem_SIRV import Problem_SIRV
 
+from sciencegym.simulations.Simulation_Lagrange import Sim_Lagrange
+from sciencegym.problems.Problem_Lagrange import Problem_Lagrange
 
 from sciencegym.agents.StableBaselinesAgents.SACAgent import SACAgent
 from stable_baselines3.common.vec_env import DummyVecEnv
@@ -55,6 +56,7 @@ def evaluate(agent, env):
         action, _ = agent.agent.predict(state, deterministic=True)
         state, reward, done, _ = env.step(action)
         terminal_state = env.buf_infos[0]["terminal_observation"]
+        print(env.buf_infos)
         state = np.array(terminal_state)
         recorded_episode = env.buf_infos[0]["record_episode"]
         R += reward
@@ -118,12 +120,14 @@ if __name__ == "__main__":
 
     input_dim, output_dim = get_env_dims(train_env)
 
+    #train_problem = Problem_Lagrange(train_env)
+    #test_problem = Problem_Lagrange(test_env)
     train_problem = Problem_Basketball(train_env)
     test_problem = Problem_Basketball(test_env)
 
     agent = SACAgent(input_dim, output_dim, lr=1e-4, policy='MlpPolicy')
 
-    train_loop(agent, train_problem, test_problem, MAX_EPISODES=2000)
-    test_loop(agent, test_problem, episodes=2000, reward_threshold=100)
+    train_loop(agent, train_problem, test_problem, MAX_EPISODES=200)
+    test_loop(agent, test_problem, episodes=200, reward_threshold=0.6)
 
     print("Finish")

@@ -43,17 +43,20 @@ class Body:
 
 
 class Sim_Lagrange(SimulationInterface):
-    def __init__(self, propagation_angle: int = PROPAGATION_ANGLE, rendering: bool = False, animate: bool = False) -> None:
+    def __init__(self, propagation_angle: int = PROPAGATION_ANGLE, rendering: bool = False, animate: bool = False,
+                 context=0) -> None:
         """An environment for a two dimensional 3-body problem which an agent wants to learn
 
         Args:
             propagation_angle (optional): angle which the 1st and 2nd body move in every step
             rendering (optional): flag to determine whether to render the simulation at each step
             animate (optional): flag to determine whether the rendering show be an animation
+            context (optional): 0-4 value to determine the scope of rewards
         """
         self.propagation_angle = propagation_angle
         self.rendering = rendering
         self.animate = animate
+        self.context = context
         self.name = 'Lagrange-v1'
 
         self.bodies = [Body() for _ in range(3)]
@@ -103,7 +106,7 @@ class Sim_Lagrange(SimulationInterface):
         return np.array([self.bodies[0].mass, self.bodies[1].mass, self.distance, 0.0, 0.0])
 
     def get_reward(self, action: NDArray) -> float:
-        """Calculates the reward for the reinforcement learner
+        """Calculates the reward for the reinforment learner
 
         Args:
             action: the positon of the 3rd position
@@ -112,8 +115,18 @@ class Sim_Lagrange(SimulationInterface):
             returns a float between 0 and 1"""
 
         # calculate the distance between the 3rd body and its expected position
+
         difference = float(np.linalg.norm(action - self.pos_expected))
-        return np.exp(-difference * 10 / self.distance)
+        if self.context == 0:
+            return np.exp(-difference * 10 / self.distance)
+        if self.context == 1:
+            return np.exp(-difference * 10 / self.distance) + np.random.normal(0, 0.2)
+        if self.context == 2:
+            return np.exp(-difference * 10 / self.distance) * np.random.binomial(1, 0.1)
+        else:
+            raise NotImplementedError('Currently, context {} is not implemented\
+                                       in LagrangeEnvironment'.format(self.context))
+
 
     def differential_equation(self, _: float, x_vals: NDArray) -> NDArray:
         """simulates the movement of the bodies
