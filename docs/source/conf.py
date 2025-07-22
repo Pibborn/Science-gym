@@ -38,7 +38,7 @@ html_theme_options = {
     "nav_links": [
         {
             "title": "Quickstart",
-            "url": "/usage/quickstart"
+            "url": "usage/quickstart"
         },
     ]
 }
