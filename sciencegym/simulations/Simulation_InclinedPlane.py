@@ -59,23 +59,23 @@ def normal_vector(p1, p2):
 
 def degreeToRad(angle):
     """
-    :param angle:
-    :return:
+    :param angle: the angle in degrees (0-360jjjA)
+    :return: the same measurement in radians
     """
     return angle / 180 * np.pi
 
 
 def radToDegree(rad):
     """
-    :param rad:
-    :return:
+    :param rad: an angle measured in radians
+    :return: the same measurement in degrees
     """
     return rad / np.pi * 180
 
 
 def rescale_movement(original_interval, value, to_interval=(-BARLENGTH, +BARLENGTH)):
     """
-    Help function to do and to undo the normalization of the action and observation space
+    Helper function to do and to undo the normalization of the action and observation space
     :param original_interval: Original interval, in which we observe the value.
     :type original_interval: list[float, float]
     :param value: Number that should be rescaled.
@@ -161,8 +161,9 @@ class InclinePlaneCoordinates():
 
 class Sim_InclinedPlane(SimulationInterface):
 
-    def __init__(self, use_analytical_simulation = True):
+    def __init__(self, use_analytical_simulation = True, context=0):
         super().__init__()
+        self.context = context
 
         self.use_analytical_simulation = use_analytical_simulation
 
@@ -433,6 +434,11 @@ class Sim_InclinedPlane(SimulationInterface):
         self.render()
         if self.normalize:
             return self.rescaleState(), reward, done, info
+        
+        if self.context == 1:
+            reward = reward + np.random.normal(0, 0.5)
+        if self.context == 2:
+            reward = (reward >= 0.99) * reward
         return self.state, reward, done, info
 
     def performAction(self, action):

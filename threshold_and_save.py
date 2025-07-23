@@ -1,12 +1,3 @@
-#!/usr/bin/env python3
-"""
-Run end‑to‑end experiments:
-
-* Train SAC for 2e5 timesteps
-* Save successful episodes to CSV
-* Discover symbolic equations from the recorded data
-"""
-
 import os
 import csv
 from pathlib import Path
@@ -16,14 +7,15 @@ from typing import Dict, List
 import numpy as np
 import pandas as pd
 
-# ------------- Science‑Gym imports -------------
 from sciencegym.agents.StableBaselinesAgents.SACAgent import SACAgent
 from sciencegym.simulations.Simulation_Basketball import Sim_Basketball
 from sciencegym.simulations.Simulation_SIRV import SIRVOneTimeVaccination
 from sciencegym.simulations.Simulation_Lagrange import Sim_Lagrange
+from sciencegym.simulations.Simulation_InclinedPlane import Sim_InclinedPlane
 from sciencegym.problems.Problem_Basketball import Problem_Basketball
 from sciencegym.problems.Problem_SIRV import Problem_SIRV
 from sciencegym.problems.Problem_Lagrange import Problem_Lagrange
+from sciencegym.problems.Problem_InclinedPlane import Problem_InclinedPlane
 
 from stable_baselines3.common.vec_env import DummyVecEnv
 from gym.spaces import Dict as GymDict
@@ -56,9 +48,17 @@ ENV_CONFIG: Dict[str, Dict] = {
         sim_cls=Sim_Lagrange,
         prob_cls=Problem_Lagrange,
         input_cols=["distance_b1_b2", "d"],
-        output_col=None,  # filled later per axis
+        output_col=None,
         downsample=False,
         every_n=3,
+    ),
+    "PLANE": dict(
+        sim_cls=Sim_InclinedPlane,
+        prob_cls=Problem_InclinedPlane,
+        input_cols=["mass", "gravity", "angle"],
+        output_col="force",
+        downsample=True,
+        every_n=10,
     ),
 }
 
@@ -66,14 +66,12 @@ SUCCESS_THR: Dict[str, float] = {
     "BASKETBALL": 80,
     "SIRV":       90,
     "LAGRANGE":   0.7,
+    "PLANE": 0.8
 }
 
 TIMESTEPS = 200_000
-TEST_EPISODES = 10_000
+TEST_EPISODES = 10_000  
 RESULTS_DIR = Path("results")
-
-# ---------------------------------------------------------
-
 
 def get_env_dims(env):
     if not isinstance(env.action_space, GymDict):
@@ -133,6 +131,7 @@ def record_successful_episodes(agent, problem, csv_path, threshold):
               newline="") as f:
         writer = csv.writer(f)
         writer.writerow(problem.variables + ["time"])
+        print(e)
         writer.writerows([e.flatten() for e in episodes])
 
     print(f"Saved {len(states)} successful trajectories to {csv_path}")

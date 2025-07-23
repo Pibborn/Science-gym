@@ -53,6 +53,7 @@ class Sim_Lagrange(SimulationInterface):
             animate (optional): flag to determine whether the rendering show be an animation
             context (optional): 0-4 value to determine the scope of rewards
         """
+        self.context = context
         self.propagation_angle = propagation_angle
         self.rendering = rendering
         self.animate = animate
@@ -151,7 +152,7 @@ class Sim_Lagrange(SimulationInterface):
             """
             length = np.linalg.norm(pos_2 - pos_1)
             direction = (pos_2 - pos_1) / length
-            return GRAVITAIONAL_CONSTANT * mass_1 * mass_2 * direction / (length*2)
+            return GRAVITAIONAL_CONSTANT * mass_1 * mass_2 * direction / (2*length)
 
         list_of_masses = np.array([body.mass for body in self.bodies])
         list_of_positions = x_vals[:6].reshape(-1, 2)

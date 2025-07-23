@@ -202,7 +202,7 @@ class SIRVOneTimeVaccination(SIRVEnvironment):
         elif self.context == 1:
             return -abs(self.SIRV_model.infected - self.initial_infected) / self.initial_infected * 100 + np.random.normal(0, 10)
         elif self.context == 2:
-            return (-abs(self.SIRV_model.infected - self.initial_infected) / self.initial_infected * 100) * np.random.binomial(1, 0.1)
+            return (-abs(self.SIRV_model.infected - self.initial_infected) / self.initial_infected * 100) >= 99
 
 
 

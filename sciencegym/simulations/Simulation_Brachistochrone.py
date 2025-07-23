@@ -11,8 +11,9 @@ class Sim_Brachistochrone(SimulationInterface):
     
     def __init__(self, x_start=0, x_end=np.pi, y_start=0, y_end=-2, step_per_eps=1000,
                  nb_points=40, g=9.80665, verbose=True, interactive=False,
-                 testing=False, nb_test_besttimes=100):
+                 testing=False, nb_test_besttimes=100, context=0):
         super().__init__()
+        self.context = 0
 
         # compute borders -> relativ to scale
         x_margin = abs(x_end - x_start) * 0.25
@@ -95,10 +96,6 @@ class Sim_Brachistochrone(SimulationInterface):
         self.ax.draw_artist(self.ln)
         self.fig.canvas.blit(self.fig.bbox)
         self.interactive = interactive
-
-    
-
-
 
     def step(self, action):
         # Iteration counter
@@ -189,6 +186,13 @@ class Sim_Brachistochrone(SimulationInterface):
                 self.best_n_t[0] = traversal_time
                 # sort list of tuples again (based on times which is the first element)
                 self.best_n_t, self.best_n_ycoords = zip(*sorted(zip(self.best_n_t, self.best_n_ycoords), reverse=True))
+
+        if self.context == 0:
+            reward = reward
+        if self.context == 1:
+            reward = reward + np.random.normal(0, 10)
+        if self.context == 2:
+            reward = reward * np.random.binomial(1, 0.1)
 
         return self.state, reward, done, {}
     

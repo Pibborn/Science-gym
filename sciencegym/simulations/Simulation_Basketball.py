@@ -204,7 +204,7 @@ class Sim_Basketball(EnvironmentInterface):
         elif self.context == 1:
             return r + np.random.normal(1, 10)
         elif self.context == 2:
-            return r * np.random.binomial(1, 0.1)
+            return r >= 99
 
     def testFailed(self):
         ball_x, ball_y = self.updateState()[0:2]
