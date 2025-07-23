@@ -1,0 +1,29 @@
+sciencegym package
+==================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   sciencegym.agents
+   sciencegym.problems
+   sciencegym.simulations
+   sciencegym.strategies
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   sciencegym.equation
+
+Module contents
+---------------
+
+.. automodule:: sciencegym
+   :members:
+   :undoc-members:
+   :show-inheritance:

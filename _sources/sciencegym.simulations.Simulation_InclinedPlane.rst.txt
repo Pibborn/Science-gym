@@ -1,0 +1,7 @@
+sciencegym.simulations.Simulation\_InclinedPlane module
+=======================================================
+
+.. automodule:: sciencegym.simulations.Simulation_InclinedPlane
+   :members:
+   :undoc-members:
+   :show-inheritance:

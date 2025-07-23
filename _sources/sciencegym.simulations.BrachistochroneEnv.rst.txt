@@ -1,0 +1,7 @@
+sciencegym.simulations.BrachistochroneEnv module
+================================================
+
+.. automodule:: sciencegym.simulations.BrachistochroneEnv
+   :members:
+   :undoc-members:
+   :show-inheritance:

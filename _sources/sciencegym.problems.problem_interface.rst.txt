@@ -1,0 +1,7 @@
+sciencegym.problems.problem\_interface module
+=============================================
+
+.. automodule:: sciencegym.problems.problem_interface
+   :members:
+   :undoc-members:
+   :show-inheritance:

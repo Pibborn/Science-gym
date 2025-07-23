@@ -1,0 +1,7 @@
+sciencegym.agents.StableBaselinesAgents.A2CAgent module
+=======================================================
+
+.. automodule:: sciencegym.agents.StableBaselinesAgents.A2CAgent
+   :members:
+   :undoc-members:
+   :show-inheritance:
