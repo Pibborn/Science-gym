@@ -17,6 +17,9 @@ from sciencegym.problems.Problem_SIRV import Problem_SIRV
 from sciencegym.problems.Problem_Lagrange import Problem_Lagrange
 from sciencegym.simulations.Simulation_Lagrange import Sim_Lagrange
 
+from sciencegym.problems.Problem_DropFriction import Problem_DropFriction
+from sciencegym.simulations.Simulation_DropFriction import Sim_DropFriction
+
 from sciencegym.agents.StableBaselinesAgents.SACAgent import SACAgent
 from stable_baselines3.common.vec_env import DummyVecEnv
 from gym.spaces import Dict
@@ -80,7 +83,6 @@ def evaluate(agent, env):
     return R, state, action
 
 def test_loop(agent, test_env, episodes, reward_threshold):
-    #sirv_variables = ['mass', 'gravity', 'angle', 'force']#['susceptible', 'infected', 'recovered', 'vaccinated', 'transmission_rate', 'recovery_rate']
 
     if type(test_env) != DummyVecEnv:
         test_env = DummyVecEnv([lambda: test_env])
@@ -124,9 +126,12 @@ def create_env_prob(problem_string):
     elif problem_string == "BRACHIS":
         env = Sim_Brachistochrone()
         prob = Problem_Brachistochrone(env)
+    elif problem_string == "DROPFriction":
+        env = Sim_DropFriction()
+        prob = Problem_DropFriction(env)
     else:
         raise ValueError(f"Problem string {problem_string} not defined!")
-    
+
     return env, prob
 
 if __name__ == "__main__":
@@ -137,7 +142,7 @@ if __name__ == "__main__":
        # wandb.login(key="")
         wandb.init(project="science-gym", sync_tensorboard=True)
 
-    problem_string = 'BRACHIS'
+    problem_string = 'BRACHIS
     train_env, train_problem = create_env_prob(problem_string)
     test_env, test_problem = create_env_prob(problem_string)
 

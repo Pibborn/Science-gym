@@ -3,24 +3,27 @@ import numpy as np
 from pysr import PySRRegressor
 from sciencegym.equation import Equation
 
+
 from sciencegym.problems.Problem_SIRV import Problem_SIRV
 from sciencegym.problems.Problem_Basketball import Problem_Basketball
 from sciencegym.problems.Problem_InclinedPlane import Problem_InclinedPlane
 from sciencegym.problems.Problem_Brachistochrone import Problem_Brachistochrone
 from sciencegym.problems.Problem_Lagrange import Problem_Lagrange
+from sciencegym.problems.Problem_DropFriction import Problem_DropFriction
 
 from sciencegym.simulations.Simulation_SIRV import SIRVOneTimeVaccination
 from sciencegym.simulations.Simulaton_Basketball import Sim_Basketball
 from sciencegym.simulations.Simulation_InclinedPlane import Sim_InclinedPlane
 from sciencegym.simulations.Simulation_Brachistochrone import Sim_Brachistochrone
 from sciencegym.simulations.Simulation_Lagrange import Sim_Lagrange
+from sciencegym.simulations.Simulation_DropFriction import Sim_DropFriction
 
 import matplotlib.pyplot as plt
 
 downsample = False
 # === User inputs ===
-environments = ['SIRV', 'INCLINEDPLANE','BASKETBALL', 'LAGRANGE_L4_X', 'LAGRANGE_L4_Y' ]
-current_env = environments[2]
+environments = ['SIRV', 'INCLINEDPLANE','BASKETBALL', 'LAGRANGE_L4_X', 'LAGRANGE_L4_Y', 'DROPFRICTION' ]
+current_env = environments[3]
 if current_env == 'SIRV':
     input_columns = ['transmission_rate', 'recovery_rate']
     output_column = 'vaccinated'
@@ -43,8 +46,7 @@ elif current_env == 'INCLINEDPLANE':
     problem = Problem_InclinedPlane(env)
 elif current_env == 'BASKETBALL':
     csv_path = 'output_episodes.csv' 
-    #input_columns = ['velocity', 'angle', 'time', 'g']
-    input_columns = ['velocity_sin_angle', 'time', 'g']
+    input_columns = ['velocity', 'angle', 'time', 'g']
     output_column = 'ball_y'
 
     downsample = False
@@ -53,8 +55,8 @@ elif current_env == 'BASKETBALL':
     env = Sim_Basketball()
     problem = Problem_Basketball(env)
 elif current_env == 'LAGRANGE_L4_Y':
-    
-    csv_path = 'output_Lagrange.csv' 
+
+    csv_path = 'output_Lagrange.csv'
     input_columns = ['distance_b1_b2']#['body_1_mass', 'body_2_mass', 'distance_b1_b2', 'bod_3_posX', 'bod_3_posY']
     output_column = 'bod_3_posY'
     downsample = True
@@ -62,8 +64,7 @@ elif current_env == 'LAGRANGE_L4_Y':
     env = Sim_Lagrange()
     problem = Problem_Lagrange(env)
 elif current_env == 'LAGRANGE_L4_X':
-    
-    csv_path = 'output_Lagrange.csv' 
+    csv_path = 'output_Lagrange.csv'
     input_columns = ['distance_b1_b2', 'd']#['body_1_mass', 'body_2_mass', 'distance_b1_b2', 'bod_3_posX', 'bod_3_posY']
     output_column = 'bod_3_posX'
     downsample = False
@@ -71,6 +72,15 @@ elif current_env == 'LAGRANGE_L4_X':
 
     env = Sim_Lagrange()
     problem = Problem_Lagrange(env)
+elif current_env == 'DROPFRICTION':
+    csv_path = 'output_DROPFRICTION.csv'
+    input_columns = ['drop_length', 'adv', 'rec', 'avg_vel', 'width']
+    output_column = 'y'
+    downsample = False
+    every_n_row = 1
+
+    env = Sim_DropFriction()
+    problem = Problem_DropFriction()
 else:
     raise ValueError('Specified environment not found!')
 # ===================
@@ -118,8 +128,7 @@ if current_env.startswith('BASKETBALL'):
 
 if current_env.startswith('LAGRANGE'):
     df['d'] = (df['body_2_mass'] /(df['body_1_mass'] + df['body_2_mass']))  * df['distance_b1_b2']
-    #print(df['d'].mean())
-    #exit()
+
 # Downsample the number of rows
 if downsample:
     df = df.iloc[::every_n_row].reset_index(drop=True)
@@ -134,7 +143,7 @@ y = df[output_column].values
 # Create symbolic regressor
 model = PySRRegressor(
     model_selection="best",  
-    niterations=40,        
+    niterations=40,
     binary_operators=["*", "-"],
     unary_operators=[],#"sin", "square"],
     extra_sympy_mappings={"sqrt": lambda x: x**0.5},

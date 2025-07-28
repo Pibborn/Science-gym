@@ -1,0 +1,2 @@
+Teflon-Au-Ethylene Glycol                         :  Last train MSE: 2.112e-01 	 Best Val MSE: 2.112e-01 
+ 
