@@ -1,4 +1,4 @@
-from .simulation_interface import SimulationInterface
+from sciencegym.simulations.simulation_interface import SimulationInterface
 
 from abc import abstractmethod, ABC
 from typing import Any
@@ -8,7 +8,7 @@ from gym import Space, Env
 from gym.spaces import Box
 from numpy.random import Generator
 
-from .sirv_compartments import SIRVVitalDynamics
+from sciencegym.simulations.sirv_compartments import SIRVVitalDynamics
 
 class SIRVEnvironment(SimulationInterface, ABC):
     def __init__(self, death_rate, birth_rate, population: int):
