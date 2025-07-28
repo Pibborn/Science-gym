@@ -1,5 +1,6 @@
 import sys
 import csv
+
 sys.path.append("/Users/lennartbaur/Documents/Arbeit/ScienceGym/Repo/science-gym")
 
 from sciencegym.simulations.Simulation_InclinedPlane import Sim_InclinedPlane
@@ -24,14 +25,11 @@ from sciencegym.agents.StableBaselinesAgents.SACAgent import SACAgent
 from stable_baselines3.common.vec_env import DummyVecEnv
 from gym.spaces import Dict
 
-
 import wandb
 from wandb.integration.sb3 import WandbCallback
 from stable_baselines3.common.monitor import Monitor
 
-
 import numpy as np
-
 
 
 def get_env_dims(env):
@@ -45,25 +43,31 @@ def get_env_dims(env):
         in_dim = len(env.observation_space)
     return in_dim, out_dim
 
-def train_loop(agent, train_problem, test_problem, MAX_EPISODES = 10, PRINT_EVERY = 10, VERBOSE=1, SDE=False, use_wandb = False):
 
+def train_loop(agent, train_problem, test_problem, MAX_EPISODES=10, PRINT_EVERY=10, VERBOSE=1, SDE=False, use_wandb=False):
     train_problem = DummyVecEnv([lambda: train_problem])
     test_problem = DummyVecEnv([lambda: test_problem])
 
     agent.agent = agent.create_model(train_problem, verbose=VERBOSE, use_sde=SDE)
 
     if use_wandb:
-        agent.agent.learn(MAX_EPISODES, log_interval=PRINT_EVERY, eval_env=test_problem, eval_freq=PRINT_EVERY,
-                             eval_log_path='agents/temp', callback=WandbCallback(
-        gradient_save_freq=1000,
-        model_save_path=f"models/{wandb.run.id}",
-        verbose=2
-    ))
+        agent.agent.learn(MAX_EPISODES,
+                          log_interval=PRINT_EVERY,
+                          eval_env=test_problem,
+                          eval_freq=PRINT_EVERY,
+                          eval_log_path='agents/temp',
+                          n_eval_episodes=1,
+                          callback=WandbCallback(
+                              gradient_save_freq=1000,
+                              model_save_path=f"models/{wandb.run.id}",
+                              verbose=2
+                          ))
     else:
         agent.agent.learn(MAX_EPISODES, log_interval=PRINT_EVERY, eval_env=test_problem, eval_freq=PRINT_EVERY,
-                             eval_log_path='agents/temp')
-    
+                          eval_log_path='agents/temp')
+
     return None
+
 
 def evaluate(agent, env):
     state = env.reset()
@@ -73,17 +77,17 @@ def evaluate(agent, env):
     while not done:
         action, _ = agent.agent.predict(state, deterministic=True)
         state, reward, done, _ = env.step(action)
-        terminal_state = env.buf_infos[0]["terminal_observation"]
-        state = np.array(terminal_state)
         R += reward
         t += 1
         reset = t == 200
         if done or reset:
             break
+    terminal_state = env.buf_infos[0]["terminal_observation"]
+    state = np.array(terminal_state)
     return R, state, action
 
-def test_loop(agent, test_env, episodes, reward_threshold):
 
+def test_loop(agent, test_env, episodes, reward_threshold):
     if type(test_env) != DummyVecEnv:
         test_env = DummyVecEnv([lambda: test_env])
 
@@ -99,9 +103,8 @@ def test_loop(agent, test_env, episodes, reward_threshold):
             test_matches += 1
         test_rewards.append(test_reward)
 
-    
     print(f"Success rate of test episodes: {test_matches}/{episodes}={(test_matches / episodes * 100):,.2f}%")
-    
+
     # Flatten each inner array and convert to a 2D array
     flattened_data = [arr.flatten() for arr in succesfull_states]
 
@@ -110,7 +113,7 @@ def test_loop(agent, test_env, episodes, reward_threshold):
         writer = csv.writer(f)
         writer.writerow(test_env.envs[0].variables)
         writer.writerows(flattened_data)
-    
+
     return test_rewards
 
 def create_env_prob(problem_string):
@@ -139,8 +142,7 @@ if __name__ == "__main__":
     use_monitor = False
 
     if use_wandb:
-       # wandb.login(key="")
-        wandb.init(project="science-gym", sync_tensorboard=True)
+        wandb.init(project="my-sac-project", sync_tensorboard=True, mode="disabled")
 
     problem_string = 'BRACHIS
     train_env, train_problem = create_env_prob(problem_string)
