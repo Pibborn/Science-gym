@@ -29,14 +29,14 @@ def mse(y_true: np.ndarray, y_pred: np.ndarray) -> float:
     return float(np.mean((y_true - y_pred) ** 2))
 
 ENV_CONFIG: Dict[str, Dict] = {
-    "BASKETBALL": dict(
-        sim_cls=Sim_Basketball,
-        prob_cls=Problem_Basketball,
-        input_cols=["velocity_sin_angle", "time", "g"],
-        output_col="ball_y",
-        downsample=False,
-        every_n=10,
-    ),
+    # "BASKETBALL": dict(
+    #     sim_cls=Sim_Basketball,
+    #     prob_cls=Problem_Basketball,
+    #     input_cols=["velocity_sin_angle", "time", "g"],
+    #     output_col="ball_y",
+    #     downsample=False,
+    #     every_n=10,
+    # ),
     "SIRV": dict(
         sim_cls=SIRVOneTimeVaccination,
         prob_cls=Problem_SIRV,
@@ -64,14 +64,14 @@ ENV_CONFIG: Dict[str, Dict] = {
 }
 
 SUCCESS_THR: Dict[str, float] = {
-    "BASKETBALL": 80,
-    "SIRV":       90,
+    "BASKETBALL": 90,
+    "SIRV":       -0.1,
     "LAGRANGE":   0.7,
     "PLANE": 0.8
 }
 
-TIMESTEPS = 50000
-TEST_EPISODES = 20000
+TIMESTEPS = 10000
+TEST_EPISODES = 5000
 RESULTS_DIR = Path("results")
 
 def get_env_dims(env):
@@ -128,7 +128,7 @@ def record_successful_episodes(agent, problem, csv_path, threshold):
     with open(csv_path, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(problem.variables)
-        writer.writerows([s.flatten() for s in states])
+        writer.writerows([np.array(s).flatten() for s in states])
 
     with open(csv_path.with_name(csv_path.stem + "_episodes.csv"), "w",
               newline="") as f:
@@ -199,7 +199,7 @@ def run_symbolic_regression(csv_path, cfg, env_key, problem) -> List[Dict]:
         model = PySRRegressor(
             model_selection="best",
             niterations=40,
-            binary_operators=["*", "-", "+"],
+            binary_operators=["*", "-", "+", "/"],
             unary_operators=[],
             progress=False,
             parsimony=0.3
