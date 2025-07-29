@@ -74,6 +74,8 @@ SUCCESS_THR: Dict[str, float] = {
 
 TIMESTEPS = 5000
 TEST_EPISODES = 200
+TIMESTEPS = 10000
+TEST_EPISODES = 5000
 RESULTS_DIR = Path("results")
 
 def get_env_dims(env):
@@ -130,7 +132,7 @@ def record_successful_episodes(agent, problem, csv_path, threshold):
     with open(csv_path, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(problem.variables)
-        writer.writerows([s.flatten() for s in states])
+        writer.writerows([np.array(s).flatten() for s in states])
 
     with open(csv_path.with_name(csv_path.stem + "_episodes.csv"), "w",
               newline="") as f:
