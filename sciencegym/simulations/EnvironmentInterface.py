@@ -212,8 +212,8 @@ class EnvironmentInterface(SimulationInterface, ABC):
         if self.success():
             # self.render()
             state = self.updateState()
-            if self.printSuccess() != "":
-                print(self.printSuccess())
+            #if self.printSuccess() != "":
+            #    print(self.printSuccess())
             reward = self.getReward()
             # self.reset()
             return state if not self.normalize else self.rescaleState(state), reward, True, {}

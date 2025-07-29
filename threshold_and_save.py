@@ -70,8 +70,8 @@ SUCCESS_THR: Dict[str, float] = {
     "PLANE": 0.8
 }
 
-TIMESTEPS = 20000
-TEST_EPISODES = 10000
+TIMESTEPS = 50000
+TEST_EPISODES = 20000
 RESULTS_DIR = Path("results")
 
 def get_env_dims(env):
@@ -86,9 +86,8 @@ def get_env_dims(env):
     return in_dim, out_dim
 
 
-def train_agent(sim, problem_cls):
+def train_agent(sim, problem):
     """Return a trained SACAgent on `sim`."""
-    problem = problem_cls(sim)
     vec_env = DummyVecEnv([lambda: problem])
     in_dim, out_dim = get_env_dims(sim)
     agent = SACAgent(in_dim, out_dim, lr=1e-4, policy="MlpPolicy")
@@ -145,10 +144,10 @@ def preprocess_dataframe(df, env_key):
     if env_key == "BASKETBALL":
         # normalise per episode
         df["episode"] = (df["time"] < df["time"].shift()).cumsum()
-        df = df[df["episode"] < 3]
+        df = df[df["episode"] < 50]
 
         def trim(group):
-            return group.iloc[: int(len(group) * 0.5)]
+            return group.iloc[:int(len(group) * 0.5)]
 
         df = df.groupby("episode", group_keys=False).apply(trim).reset_index(drop=True)
 
@@ -192,15 +191,18 @@ def run_symbolic_regression(csv_path, cfg, env_key, problem) -> List[Dict]:
     ground_truth = problem.solution()
     for out_col, in_cols in targets:
         print(f'===Regressing for {out_col}===')
+        print('Data sample:')
+        print(df.head(5))
         y_true = df[out_col].values
         X = df[in_cols].values
 
         model = PySRRegressor(
             model_selection="best",
             niterations=40,
-            binary_operators=["*", "-", "+", "/"],
-            unary_operators=['sqrt', 'sin', 'cos'],
+            binary_operators=["*", "-", "+"],
+            unary_operators=[],
             progress=False,
+            parsimony=0.3
         ).fit(X, y_true, variable_names=in_cols)
         
         if isinstance(ground_truth, list):
@@ -230,6 +232,14 @@ def run_symbolic_regression(csv_path, cfg, env_key, problem) -> List[Dict]:
                     gt_mse=gt_mse,
                 )
             )
+            score = problem.evaluation(eq, data=df)
+            if type(score) is list:
+                for i, s in enumerate(score):
+                    print(f"Equation: {eq}, Solution{ground_truth}, Score: {score}, Equality: {eq == ground_truth}")
+            else:
+                print(f"Equation: {eq}, Score: {score}, Equality: {eq == ground_truth}")
+
+        print(f'Expected result: {ground_truth}')
 
     return rows
 
@@ -239,6 +249,7 @@ def main():
     parser = ArgumentParser('Run experiments with the "Threshold and Save" strategy')
     parser.add_argument('--env', default='all', choices=[k.lower() for k in ENV_CONFIG.keys()])
     parser.add_argument('--context', type=int, default=0, choices=[0, 1, 2])
+    parser.add_argument('--regress-only', help='Run regression only', action='store_true')
     args = parser.parse_args()
     
     # run on all problems or singular one?
@@ -262,17 +273,24 @@ def main():
             kwargs = {'rendering': False}
         else:
             kwargs = {}
-        sim = cfg["sim_cls"](context=ctx, **kwargs)
-        agent, problem = train_agent(sim, cfg["prob_cls"])
 
+        # set up output directories and csv
         out_dir = RESULTS_DIR / f"{env_key}_ctx{ctx}"
         out_dir.mkdir(parents=True, exist_ok=True)
         csv_file = out_dir / "successful_states.csv"
 
-        n_saved = record_successful_episodes(agent, problem, csv_file, threshold=thr)
-        if n_saved == 0:
-            continue
-        run_symbolic_regression(csv_file, cfg, env_key, problem)
+        # set up simulation and problem
+        sim = cfg["sim_cls"](context=ctx, **kwargs)
+        problem = cfg['prob_cls'](sim)
+
+        if not args.regress_only:
+            print('Training RL agent...')
+            agent, problem = train_agent(sim, problem)
+            n_saved = record_successful_episodes(agent, problem, csv_file, threshold=thr)
+            if n_saved == 0:
+                continue
+
+        results = run_symbolic_regression(csv_file, cfg, env_key, problem)
 
 
 if __name__ == "__main__":
