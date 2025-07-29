@@ -10,7 +10,7 @@ from numpy.typing import NDArray
 
 # defined constants as a shortcut to edit certain values
 GRAVITAIONAL_CONSTANT = 6.672e-11   # used to calculated the force
-PROPAGATION_ANGLE = 95 # angle which the 1st and 2nd body move in every step
+PROPAGATION_ANGLE = 60 # angle which the 1st and 2nd body move in every step
 MASS_SHIP = .1   # mass of the 3rd body, needs to be much smaller than the 2nd body
 
 LOWER_BODY_1, UPPER_BODY_1 = 0.5, 1.0   # normalized values 

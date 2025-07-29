@@ -6,6 +6,7 @@ from typing import Dict, List
 
 import numpy as np
 import pandas as pd
+from argparse import ArgumentParser
 
 from sciencegym.agents.StableBaselinesAgents.SACAgent import SACAgent
 from sciencegym.simulations.Simulation_Basketball import Sim_Basketball
@@ -69,8 +70,8 @@ SUCCESS_THR: Dict[str, float] = {
     "PLANE": 0.8
 }
 
-TIMESTEPS = 200_000
-TEST_EPISODES = 10_000  
+TIMESTEPS = 20000
+TEST_EPISODES = 10000
 RESULTS_DIR = Path("results")
 
 def get_env_dims(env):
@@ -99,29 +100,32 @@ def train_agent(sim, problem_cls):
 
 def record_successful_episodes(agent, problem, csv_path, threshold):
     """Roll out evaluation episodes, store those above reward threshold."""
+    print('Evaluating...')
     vec_env = DummyVecEnv([lambda: problem])
-    successes = []
+    states = []
+    episodes = []
 
     for _ in range(TEST_EPISODES):
         obs = vec_env.reset()
-        done, reward_sum = False, 0.0
+        done, reward_sum, t = False, 0.0, 0
         while not done:
             action, _ = agent.agent.predict(obs, deterministic=True)
             obs, reward, done, info = vec_env.step(action)
             reward_sum += reward
-            if done:
-                terminal_obs = info[0]["terminal_observation"]
-                episode = info[0].get("record_episode", np.array([np.nan]))
+            t += 1
+            if done or t == 200:
+                terminal_obs = vec_env.buf_infos[0]["terminal_observation"]
+                episode = vec_env.buf_infos[0].get("record_episode", np.array([np.nan]))
                 if reward_sum >= threshold:
-                    successes.append((terminal_obs, episode))
+                    states.append(terminal_obs)
+                    episodes += episode
                 break
 
-    if not successes:
-        print("No successful episodes found ‑ nothing to record.")
+    if len(states) == 0:
+        print("No successful episodes found: nothing to record.")
         return 0 
 
     # flatten and write
-    states, episodes = zip(*successes)
     with open(csv_path, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(problem.variables)
@@ -130,8 +134,7 @@ def record_successful_episodes(agent, problem, csv_path, threshold):
     with open(csv_path.with_name(csv_path.stem + "_episodes.csv"), "w",
               newline="") as f:
         writer = csv.writer(f)
-        writer.writerow(problem.variables + ["time"])
-        print(e)
+        writer.writerow(vec_env.envs[0].variables + ["time"])
         writer.writerows([e.flatten() for e in episodes])
 
     print(f"Saved {len(states)} successful trajectories to {csv_path}")
@@ -139,7 +142,6 @@ def record_successful_episodes(agent, problem, csv_path, threshold):
 
 
 def preprocess_dataframe(df, env_key):
-    """Match the logic from original symbolic_regression.py."""
     if env_key == "BASKETBALL":
         # normalise per episode
         df["episode"] = (df["time"] < df["time"].shift()).cumsum()
@@ -157,7 +159,7 @@ def preprocess_dataframe(df, env_key):
 
         df = df.groupby("episode", group_keys=False).apply(norm).reset_index(drop=True)
         df["velocity_sin_angle"] = df["velocity"] * np.sin(df["angle"])
-        df["g"] = 9.80665
+        df["g"] = -9.80665
 
     if env_key == "LAGRANGE":
         df["d"] = (
@@ -170,6 +172,9 @@ def preprocess_dataframe(df, env_key):
 def run_symbolic_regression(csv_path, cfg, env_key, problem) -> List[Dict]:
     """Fit PySR and return a list of result dicts."""
     rows = []
+    if env_key == "BASKETBALL":
+        csv_path = csv_path.with_name(csv_path.stem + "_episodes.csv")
+    print(f'Opening {csv_path}')
     df = pd.read_csv(csv_path)
     df = preprocess_dataframe(df, env_key)
 
@@ -186,6 +191,7 @@ def run_symbolic_regression(csv_path, cfg, env_key, problem) -> List[Dict]:
 
     ground_truth = problem.solution()
     for out_col, in_cols in targets:
+        print(f'===Regressing for {out_col}===')
         y_true = df[out_col].values
         X = df[in_cols].values
 
@@ -230,7 +236,23 @@ def run_symbolic_regression(csv_path, cfg, env_key, problem) -> List[Dict]:
 
 def main():
     RESULTS_DIR.mkdir(exist_ok=True)
-    for env_key, ctx in product(ENV_CONFIG.keys(), (0, 1, 2)):
+    parser = ArgumentParser('Run experiments with the "Threshold and Save" strategy')
+    parser.add_argument('--env', default='all', choices=[k.lower() for k in ENV_CONFIG.keys()])
+    parser.add_argument('--context', type=int, default=0, choices=[0, 1, 2])
+    args = parser.parse_args()
+    
+    # run on all problems or singular one?
+    if args.env == 'all':
+        ctx = (0, 1, 2)
+        env_key = ENV_CONFIG.keys()
+        runs = product(env_key, ctx)
+    else:
+        ctx = args.context
+        env_key = args.env.upper()
+        runs = [(env_key, ctx)]
+
+    for run in runs:
+        env_key, ctx = run
         cfg = ENV_CONFIG[env_key]
         thr = SUCCESS_THR[env_key]
         print(f"\n=== Training {env_key} (context={ctx}) ===")

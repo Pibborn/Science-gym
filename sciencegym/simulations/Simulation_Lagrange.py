@@ -22,8 +22,8 @@ SCALE_M1, SCALE_M2 = 1e4, 1e3 # scale factor used in the internal step for the s
 LOWER_DIST, UPPER_DIST = 0.5, 1.0   # normalized values
 SCALE_DIST = 1  # scale factor for the distance, currently set to 1 for simplicity 
 
-LOWER_ACTION_X, UPPER_ACTION_X = 0.0, 1.0   # limits for the x-position of the 3rd body
-LOWER_ACTION_Y, UPPER_ACTION_Y = 0.0, 1.0   # limits for the y-position of the 3rd body
+LOWER_ACTION_X, UPPER_ACTION_X = 0.01, 1.0   # limits for the x-position of the 3rd body
+LOWER_ACTION_Y, UPPER_ACTION_Y = 0.01, 1.0   # limits for the y-position of the 3rd body
 
 
 class Body:
