@@ -118,19 +118,19 @@ if __name__ == "__main__":
        # wandb.login(key="")
         wandb.init(project="science-gym", sync_tensorboard=True)
 
-    train_env = Sim_Lagrange(context=2)
-    test_env = Sim_Lagrange(context=2)
+    train_env = Sim_Basketball(context=0, rendering=False)
+    test_env = Sim_Basketball(context=0, rendering=False)
 
     input_dim, output_dim = get_env_dims(train_env)
 
-    train_problem = Problem_Lagrange(train_env)
-    test_problem = Problem_Lagrange(test_env)
-    #train_problem = Problem_Basketball(train_env)
-    #test_problem = Problem_Basketball(test_env)
+    #train_problem = Problem_Lagrange(train_env)
+    #test_problem = Problem_Lagrange(test_env)
+    train_problem = Problem_Basketball(train_env)
+    test_problem = Problem_Basketball(test_env)
 
     agent = SACAgent(input_dim, output_dim, lr=1e-4, policy='MlpPolicy')
 
-    train_loop(agent, train_problem, test_problem, MAX_EPISODES=200)
-    test_loop(agent, test_problem, episodes=200, reward_threshold=0.6)
+    train_loop(agent, train_problem, test_problem, MAX_EPISODES=1000)
+    test_loop(agent, test_problem, episodes=1000, reward_threshold=0.3)
 
     print("Finish")

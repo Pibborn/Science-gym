@@ -201,7 +201,7 @@ class Sim_InclinedPlane(SimulationInterface):
         self.max_angle = degreeToRad(70)
 
         # forces
-        min_force = 0
+        min_force = 0.001
         self.max_force = abs(self.max_mass * self.max_gravity) * math.sin(self.max_angle)
 
         # Box2d world setup

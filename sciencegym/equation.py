@@ -30,5 +30,8 @@ class Equation:
     def __str__(self):
         return str(self.expr)
 
+    def to_latex(self):
+        return sp.latex(self.expr)
+
     def to_sympy(self):
         return self.expr

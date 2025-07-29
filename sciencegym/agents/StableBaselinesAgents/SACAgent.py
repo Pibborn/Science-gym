@@ -1,5 +1,4 @@
 import sys
-sys.path.append("/Users/lennartbaur/Documents/Arbeit/ScienceGym/Repo/science-gym")
 
 from stable_baselines3 import SAC, HerReplayBuffer
 
@@ -49,6 +48,7 @@ class SACAgent(StableBaselinesAgent):
                          # play with the following parameters if you use pictures as image
                          buffer_size=800 if self.policy == 'CnnPolicy' else 1000000,
                          #batch_size=128 if self.policy == 'CnnPolicy' else 256,
+                         ent_coef=0.6
                          )
         return self.agent
 

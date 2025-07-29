@@ -133,7 +133,7 @@ class Sim_Basketball(EnvironmentInterface):
             pygame.display.set_caption('Basketball Environment')
 
         # action space and observation space
-        self.action_space = Box(low=np.array([0, 0]), high=np.array([15, 15] if not self.normalize else [1, 1]))
+        self.action_space = Box(low=np.array([0.1, 0.1]), high=np.array([15, 15] if not self.normalize else [1, 1]))
         # alternatively: use (total) velocity and angle to throw the ball
         # self.action_space = gym.spaces.Box(low=np.array([-np.pi, 0]), high=np.array([np.pi, 100]))
 
