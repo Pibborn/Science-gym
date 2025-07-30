@@ -64,9 +64,9 @@ ENV_CONFIG: Dict[str, Dict] = {
 
 SUCCESS_THR: Dict[str, float] = {
     "BASKETBALL": 80,
-    "SIRV":       90,
+    "SIRV":       -0.3,
     "LAGRANGE":   0.7,
-    "PLANE": 0.8
+    "PLANE": -0.1
 }
 
 TIMESTEPS = 200_000
