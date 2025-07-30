@@ -1,3 +1,4 @@
+import json
 import os
 import csv
 from pathlib import Path
@@ -22,6 +23,7 @@ from gym.spaces import Dict as GymDict
 
 from pysr import PySRRegressor
 from sciencegym.equation import Equation
+import time
 
 def mse(y_true: np.ndarray, y_pred: np.ndarray) -> float:
     """Mean‑squared error helper (1‑d numpy arrays)."""
@@ -230,7 +232,8 @@ def run_symbolic_regression(csv_path, cfg, env_key, problem) -> List[Dict]:
 
 def main():
     RESULTS_DIR.mkdir(exist_ok=True)
-    for env_key, ctx in product(ENV_CONFIG.keys(), (0, 1, 2)):
+    for env_key, ctx in product(ENV_CONFIG.keys(), [0]):
+        start_time = time.time()
         cfg = ENV_CONFIG[env_key]
         thr = SUCCESS_THR[env_key]
         print(f"\n=== Training {env_key} (context={ctx}) ===")
@@ -246,11 +249,16 @@ def main():
         out_dir = RESULTS_DIR / f"{env_key}_ctx{ctx}"
         out_dir.mkdir(parents=True, exist_ok=True)
         csv_file = out_dir / "successful_states.csv"
-
+        end_time_rl = time.time()
         n_saved = record_successful_episodes(agent, problem, csv_file, threshold=thr)
         if n_saved == 0:
             continue
-        run_symbolic_regression(csv_file, cfg, env_key, problem)
+        results_sr = run_symbolic_regression(csv_file, cfg, env_key, problem)
+        end_time_sr = time.time()
+        results_sr[0]['time_rl']= end_time_rl - start_time
+        results_sr[0]['time_sr'] = end_time_sr - end_time_rl
+        with open(f"{out_dir}/results_sr.json", "w") as outfile:
+            json.dump(results_sr, outfile, indent=4)
 
 
 if __name__ == "__main__":
