@@ -134,7 +134,7 @@ y = df[output_column].values
 # Create symbolic regressor
 model = PySRRegressor(
     model_selection="best",  
-    niterations=40,        
+    niterations=20000,        
     binary_operators=["*", "-"],
     unary_operators=[],#"sin", "square"],
     extra_sympy_mappings={"sqrt": lambda x: x**0.5},

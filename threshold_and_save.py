@@ -29,14 +29,14 @@ def mse(y_true: np.ndarray, y_pred: np.ndarray) -> float:
     return float(np.mean((y_true - y_pred) ** 2))
 
 ENV_CONFIG: Dict[str, Dict] = {
-    # "BASKETBALL": dict(
-    #     sim_cls=Sim_Basketball,
-    #     prob_cls=Problem_Basketball,
-    #     input_cols=["velocity_sin_angle", "time", "g"],
-    #     output_col="ball_y",
-    #     downsample=False,
-    #     every_n=10,
-    # ),
+    "BASKETBALL": dict(
+        sim_cls=Sim_Basketball,
+        prob_cls=Problem_Basketball,
+        input_cols=["velocity_sin_angle", "time", "g"],
+        output_col="ball_y",
+        downsample=False,
+        every_n=10,
+    ),
     "SIRV": dict(
         sim_cls=SIRVOneTimeVaccination,
         prob_cls=Problem_SIRV,
@@ -66,12 +66,12 @@ ENV_CONFIG: Dict[str, Dict] = {
 SUCCESS_THR: Dict[str, float] = {
     "BASKETBALL": 90,
     "SIRV":       -0.1,
-    "LAGRANGE":   0.7,
-    "PLANE": 0.8
+    "LAGRANGE":   0.90,
+    "PLANE": -0.1
 }
 
-TIMESTEPS = 10000
-TEST_EPISODES = 5000
+TIMESTEPS = 100000
+TEST_EPISODES = 20000
 RESULTS_DIR = Path("results")
 
 def get_env_dims(env):
@@ -197,12 +197,20 @@ def run_symbolic_regression(csv_path, cfg, env_key, problem) -> List[Dict]:
         X = df[in_cols].values
 
         model = PySRRegressor(
-            model_selection="best",
-            niterations=40,
-            binary_operators=["*", "-", "+", "/"],
-            unary_operators=[],
-            progress=False,
-            parsimony=0.3
+            model_selection="accuracy",
+            niterations=1000,
+            binary_operators=["*", "-"],
+            unary_operators=None,
+            progress=True,
+            random_state=1337,
+            should_simplify=True,
+            deterministic=True,
+            parallelism='serial',
+            maxsize=10,
+            complexity_of_constants=3,
+            weight_optimize=0.001
+            #extra_sympy_mappings={"sqrt": lambda x: x**0.5},
+            #nested_constraints={"/": {"/": 0}, "sqrt": {"sqrt": 0}},
         ).fit(X, y_true, variable_names=in_cols)
         
         if isinstance(ground_truth, list):
@@ -235,11 +243,16 @@ def run_symbolic_regression(csv_path, cfg, env_key, problem) -> List[Dict]:
             score = problem.evaluation(eq, data=df)
             if type(score) is list:
                 for i, s in enumerate(score):
-                    print(f"Equation: {eq}, Solution{ground_truth}, Score: {score}, Equality: {eq == ground_truth}")
+                    print(f"Equation: {eq}, Score: {score[i]}, Equality: {eq == ground_truth[i]}")
             else:
                 print(f"Equation: {eq}, Score: {score}, Equality: {eq == ground_truth}")
 
-        print(f'Expected result: {ground_truth}')
+        if type(score) is list:
+            s = 'Expected result : ' + ' or '.join(str(g) for g in ground_truth)
+        else:
+            s =  ground_truth
+
+        print(f'Expected result: {s}')
 
     return rows
 
