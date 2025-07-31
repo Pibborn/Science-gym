@@ -72,19 +72,26 @@ ENV_CONFIG: Dict[str, Dict] = {
         downsample=False,
         every_n=1,
     ),
+    "DROPFRICTION": dict(
+        sim_cls=Sim_DropFriction,
+        prob_cls=Problem_DropFriction,
+        input_cols=['drop_length', 'adv', 'rec', 'avg_vel', "width"],
+        output_col="y",
+        downsample=False,
+        every_n=1,
+    ),
 }
 
 SUCCESS_THR: Dict[str, float] = {
     "BASKETBALL": 80,
-    "SIRV":       -0.3,
-    "LAGRANGE":   0.7,
-    "PLANE": -0.1
+    "SIRV": -0.3,
+    "LAGRANGE": 0.7,
+    "PLANE": -0.1,
+    "DROPFRICTION": 0.1,
 }
 
-TIMESTEPS = 5000
-TEST_EPISODES = 200
-TIMESTEPS = 10000
-TEST_EPISODES = 5000
+TIMESTEPS = 30_000
+TEST_EPISODES = 50
 RESULTS_DIR = Path("results")
 
 
@@ -209,6 +216,13 @@ def preprocess_dataframe(df, env_key):
             df["body_2_mass"] / (df["body_1_mass"] + df["body_2_mass"])
         ) * df["distance_b1_b2"]
 
+    if env_key == "DROPFRICTION":
+        loaded_scaler_Y = joblib.load(f'/home/jbrugger/PycharmProjects/Science-gym/environments/drop_friction_models/Teflon-Au-Ethylene Glycol/scaler_Y.pkl')
+        df = pd.DataFrame(
+            loaded_scaler_Y.inverse_transform(
+                df),
+            columns=df.columns
+        )
     return df
 
 
@@ -248,8 +262,10 @@ def run_symbolic_regression(csv_path, cfg, env_key, problem) -> List[Dict]:
             progress=False,
             parsimony=0.3
         ).fit(X, y_true, variable_names=in_cols)
-        
-        if isinstance(ground_truth, list):
+        if ground_truth is None:
+            gt_mse = None
+
+        elif isinstance(ground_truth, list):
             # multiple solutions possible
             min_mse = 1000000
             best_gt = None
@@ -264,7 +280,7 @@ def run_symbolic_regression(csv_path, cfg, env_key, problem) -> List[Dict]:
         for _, r in model.equations_.iterrows():
             expr = str(r["sympy_format"])
             eq = Equation(expr)
-            y_pred = eq.evaluate(df)
+            mse = problem.evaluation(eq, data=df)
             rows.append(
                 dict(
                     environment=env_key,
@@ -272,17 +288,13 @@ def run_symbolic_regression(csv_path, cfg, env_key, problem) -> List[Dict]:
                     target=out_col,
                     equation=expr,
                     complexity=int(eq.complexity()),
-                    mse=mse(y_true, y_pred),
+                    mse=mse,
                     gt_mse=gt_mse,
-                    score = r["score"]
+                    score=r["score"]
                 )
             )
-            score = problem.evaluation(eq, data=df)
-            if type(score) is list:
-                for i, s in enumerate(score):
-                    print(f"Equation: {eq}, Solution{ground_truth}, Score: {score}, Equality: {eq == ground_truth}")
-            else:
-                print(f"Equation: {eq}, Score: {score}, Equality: {eq == ground_truth}")
+
+            print(f"Equation: {eq}, MSE: {mse}, Equality: {eq == ground_truth}")
 
         print(f'Expected result: {ground_truth}')
 
@@ -296,7 +308,7 @@ def main():
     parser.add_argument('--context', type=int, default=0, choices=[0, 1, 2])
     parser.add_argument('--regress-only', help='Run regression only', action='store_true')
     args = parser.parse_args()
-    
+
     # run on all problems or singular one?
     if args.env == 'all':
         ctx = (0, 1, 2)
@@ -313,7 +325,7 @@ def main():
         cfg = ENV_CONFIG[env_key]
         thr = SUCCESS_THR[env_key]
         print(f"\n=== Training {env_key} (context={ctx}) ===")
-        
+
         if 'basket' in str(cfg["sim_cls"]).lower():
             print('Basketball: rendering off')
             kwargs = {'rendering': False}
