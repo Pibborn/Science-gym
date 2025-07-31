@@ -5,12 +5,19 @@ from pathlib import Path
 from itertools import product
 from typing import Dict, List
 
+import joblib
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from argparse import ArgumentParser
 
+from tqdm import tqdm
+
+from sciencegym.agents.StableBaselinesAgents.PPOAgent import PPOAgent
 from sciencegym.agents.StableBaselinesAgents.SACAgent import SACAgent
+from sciencegym.problems.Problem_DropFriction import Problem_DropFriction
 from sciencegym.simulations.Simulation_Basketball import Sim_Basketball
+from sciencegym.simulations.Simulation_DropFriction import Sim_DropFriction
 from sciencegym.simulations.Simulation_SIRV import SIRVOneTimeVaccination
 from sciencegym.simulations.Simulation_Lagrange import Sim_Lagrange
 from sciencegym.simulations.Simulation_InclinedPlane import Sim_InclinedPlane
@@ -26,9 +33,11 @@ from pysr import PySRRegressor
 from sciencegym.equation import Equation
 import time
 
+
 def mse(y_true: np.ndarray, y_pred: np.ndarray) -> float:
     """Mean‑squared error helper (1‑d numpy arrays)."""
     return float(np.mean((y_true - y_pred) ** 2))
+
 
 ENV_CONFIG: Dict[str, Dict] = {
     "BASKETBALL": dict(
@@ -78,6 +87,7 @@ TIMESTEPS = 10000
 TEST_EPISODES = 5000
 RESULTS_DIR = Path("results")
 
+
 def get_env_dims(env):
     if not isinstance(env.action_space, GymDict):
         out_dim = int(env.action_space.shape[0])
@@ -107,13 +117,20 @@ def record_successful_episodes(agent, problem, csv_path, threshold):
     vec_env = DummyVecEnv([lambda: problem])
     states = []
     episodes = []
+    possible_states = 0
+    reward_sum_all_episodes = 0
+    num_full_episodes = 0
 
     for _ in range(TEST_EPISODES):
         obs = vec_env.reset()
         done, reward_sum, t = False, 0.0, 0
         while not done:
-            action, _ = agent.agent.predict(obs, deterministic=True)
+            if isinstance(vec_env.envs[0], Problem_DropFriction):
+                action, _ = agent.agent.predict(obs)
+            else:
+                action, _ = agent.agent.predict(obs, deterministic=True)
             obs, reward, done, info = vec_env.step(action)
+            t += 1
             reward_sum += reward
             t += 1
             if done or t == 200:
@@ -123,6 +140,23 @@ def record_successful_episodes(agent, problem, csv_path, threshold):
                     states.append(terminal_obs)
                     episodes += episode
                 break
+            if isinstance(problem, Problem_DropFriction):
+                possible_states += 1
+                if reward >= threshold:
+                    states.append(obs)
+                if done or t == 200:
+                    break
+            else:
+                if done or t == 200:
+                    possible_states += 1
+                    terminal_obs = vec_env.buf_infos[0]["terminal_observation"]
+                    episode = vec_env.buf_infos[0].get("record_episode", np.array([np.nan]))
+                    if reward_sum >= threshold:
+                        states.append(terminal_obs)
+                        episodes += episode
+                    break
+        reward_sum_all_episodes += reward_sum
+        num_full_episodes += 1
 
     if len(states) == 0:
         print("No successful episodes found: nothing to record.")
@@ -138,10 +172,16 @@ def record_successful_episodes(agent, problem, csv_path, threshold):
               newline="") as f:
         writer = csv.writer(f)
         writer.writerow(vec_env.envs[0].variables + ["time"])
-        writer.writerows([e.flatten() for e in episodes])
+    record_dict = {
+        '#_records_saved': len(states),
+        '#_possible_states': possible_states,
+        'SuccessRate': len(states) / possible_states,
+        'avg_reward': float((reward_sum_all_episodes / num_full_episodes)[0])
+    }
+    print(f"Saved {len(states)} successful trajectories to {csv_path}\n"
+          f"from {possible_states} which is a ratio of {len(states) / possible_states}")
 
-    print(f"Saved {len(states)} successful trajectories to {csv_path}")
-    return len(states)
+    return record_dict
 
 
 def preprocess_dataframe(df, env_key):
@@ -288,24 +328,25 @@ def main():
         # set up simulation and problem
         sim = cfg["sim_cls"](context=ctx, **kwargs)
         problem = cfg['prob_cls'](sim)
-
+        records_dict = {}
         if not args.regress_only:
             print('Training RL agent...')
             agent, problem = train_agent(sim, problem)
             end_time_rl = time.time()
 
-            n_saved = record_successful_episodes(agent, problem, csv_file, threshold=thr)
-            if n_saved == 0:
+            records_dict = record_successful_episodes(agent, problem, csv_file, threshold=thr)
+            if records_dict['#_records_saved'] == 0:
                 continue
 
         results = run_symbolic_regression(csv_file, cfg, env_key, problem)
         end_time_sr = time.time()
         results[0]['time_rl'] = end_time_rl - start_time
         results[0]['time_sr'] = end_time_sr - end_time_rl
+        results[0]['#_record_dict'] = records_dict
+        print(f"Results saved in : {f'{out_dir}/results_sr.json'}")
         with open(f"{out_dir}/results_sr.json", "w") as outfile:
             json.dump(results, outfile, indent=4)
 
 
 if __name__ == "__main__":
     main()
-
