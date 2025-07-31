@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="violet" data-content_root="./">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>sciencegym.simulations.Simulation_Scale module - science-gym 0.1 documentation</title><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="sciencegym.simulations.simulation_interface module" href="sciencegym.simulations.simulation_interface.html" /><link rel="prev" title="sciencegym.simulations.Simulation_SIRV module" href="sciencegym.simulations.Simulation_SIRV.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="_static/pygments.css?v=397bb51e" />
+    <link rel="stylesheet" type="text/css" href="_static/shibuya.css?v=d0008d65" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="_static/print.css?v=20ff2c19" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="sciencegym.simulations.Simulation_Scale module"/>
+<meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="index.html">
+      
+      
+      <strong>science-gym</strong>
+    </a>
+    <div class="sy-head-nav" id="HeadNav">
+      <nav class="sy-head-links"><ul><li class="link"><a href="usage/quickstart.html">Quickstart</a></li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials"></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2 -translate-x-2"></span>
+          <span class="hamburger_3 -translate-x-1"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="usage/installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/quickstart.html">science-gym quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/problems.html">Create your new problems</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">sciencegym</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="sciencegym.html">sciencegym package</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="sciencegym.agents.html">sciencegym.agents package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.agents.StableBaselinesAgents.html">sciencegym.agents.StableBaselinesAgents package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.agents.TrackingCallback.html">sciencegym.agents.TrackingCallback module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="sciencegym.problems.html">sciencegym.problems package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.problems.Problem_Basketball.html">sciencegym.problems.Problem_Basketball module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.problems.Problem_Brachistochrone.html">sciencegym.problems.Problem_Brachistochrone module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.problems.Problem_InclinedPlane.html">sciencegym.problems.Problem_InclinedPlane module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.problems.Problem_Lagrange.html">sciencegym.problems.Problem_Lagrange module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.problems.Problem_SIRV.html">sciencegym.problems.Problem_SIRV module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.problems.Problem_Scale.html">sciencegym.problems.Problem_Scale module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.problems.problem_interface.html">sciencegym.problems.problem_interface module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 current"><a class="reference internal" href="sciencegym.simulations.html">sciencegym.simulations package</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.BasketballEnvironment.html">sciencegym.simulations.BasketballEnvironment module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.BrachistochroneEnv.html">sciencegym.simulations.BrachistochroneEnv module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.EnvironmentInterface.html">sciencegym.simulations.EnvironmentInterface module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.GymEnv.html">sciencegym.simulations.GymEnv module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.InclinedPlane.html">sciencegym.simulations.InclinedPlane module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.LagrangeEnvironment.html">sciencegym.simulations.LagrangeEnvironment module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.OrbitEnvironment.html">sciencegym.simulations.OrbitEnvironment module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.Pendulum.html">sciencegym.simulations.Pendulum module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.SIRVBase.html">sciencegym.simulations.SIRVBase module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.SIRVEnvironmentOnetime.html">sciencegym.simulations.SIRVEnvironmentOnetime module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.Simulation_Basketball.html">sciencegym.simulations.Simulation_Basketball module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.Simulation_Brachistochrone.html">sciencegym.simulations.Simulation_Brachistochrone module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.Simulation_InclinedPlane.html">sciencegym.simulations.Simulation_InclinedPlane module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.Simulation_Lagrange.html">sciencegym.simulations.Simulation_Lagrange module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.Simulation_SIRV.html">sciencegym.simulations.Simulation_SIRV module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">sciencegym.simulations.Simulation_Scale module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.simulation_interface.html">sciencegym.simulations.simulation_interface module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.sirv_compartments.html">sciencegym.simulations.sirv_compartments module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="sciencegym.strategies.html">sciencegym.strategies package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sciencegym.equation.html">sciencegym.equation module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw"><code class="docutils literal notranslate"><span class="pre">ScaleDraw</span></code></a><ul>
+<li><a class="reference internal" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.close"><code class="docutils literal notranslate">close()</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.convertDensityToGrayscale"><code class="docutils literal notranslate">convertDensityToGrayscale()</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.convertDensityToRGB"><code class="docutils literal notranslate">convertDensityToRGB()</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.convertGrayscaleToDensity"><code class="docutils literal notranslate">convertGrayscaleToDensity()</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.convertRGBToDensity"><code class="docutils literal notranslate">convertRGBToDensity()</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.createBox"><code class="docutils literal notranslate">createBox()</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.deleteAllBoxes"><code class="docutils literal notranslate">deleteAllBoxes()</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.deleteBox"><code class="docutils literal notranslate">deleteBox()</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.getMaxAngle"><code class="docutils literal notranslate">getMaxAngle()</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.internal_step"><code class="docutils literal notranslate">internal_step()</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.moveAlongBar"><code class="docutils literal notranslate">moveAlongBar()</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.moveBox"><code class="docutils literal notranslate">moveBox()</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.moveBoxTo"><code class="docutils literal notranslate">moveBoxTo()</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.name"><code class="docutils literal notranslate">name</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.observation_space"><code class="docutils literal notranslate">observation_space</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.performActions"><code class="docutils literal notranslate">performActions()</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.placeBox"><code class="docutils literal notranslate">placeBox()</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.render"><code class="docutils literal notranslate">render()</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.rescaleState"><code class="docutils literal notranslate">rescaleState()</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.reset"><code class="docutils literal notranslate">reset()</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.resetBoxes"><code class="docutils literal notranslate">resetBoxes()</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.resetState"><code class="docutils literal notranslate">resetState()</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.seed"><code class="docutils literal notranslate">seed()</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.step"><code class="docutils literal notranslate">step()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sciencegym.simulations.Simulation_Scale.rescale_movement"><code class="docutils literal notranslate"><span class="pre">rescale_movement()</span></code></a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="index.html"><span itemprop="name">science-gym</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="modules.html"><span itemprop="name">sciencegym</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="sciencegym.html"><span itemprop="name">sciencegym package</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="3" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="sciencegym.simulations.html"><span itemprop="name">sciencegym.simulations package</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="4" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">sciencegym.simulations.Simulation_Scale module</strong>
+        <meta itemprop="position" content="5" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+        <article class="yue" role="main">
+          <section id="module-sciencegym.simulations.Simulation_Scale">
+<span id="sciencegym-simulations-simulation-scale-module"></span><h1>sciencegym.simulations.Simulation_Scale module<a class="headerlink" href="#module-sciencegym.simulations.Simulation_Scale" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="sciencegym.simulations.Simulation_Scale.ScaleDraw">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sciencegym.simulations.Simulation_Scale.</span></span><span class="sig-name descname"><span class="pre">ScaleDraw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="sciencegym.simulations.simulation_interface.html#sciencegym.simulations.simulation_interface.SimulationInterface" title="sciencegym.simulations.simulation_interface.SimulationInterface"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimulationInterface</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.simulations.Simulation_Scale.ScaleDraw.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.close" title="Link to this definition">¶</a></dt>
+<dd><p>Close the pygame window and terminate the program.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.simulations.Simulation_Scale.ScaleDraw.convertDensityToGrayscale">
+<span class="sig-name descname"><span class="pre">convertDensityToGrayscale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">density</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.convertDensityToGrayscale" title="Link to this definition">¶</a></dt>
+<dd><p>Gets a value for the density of one box and returns the corresponding grayscale value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>density</strong> (<em>float</em>) – density of the box (should be in range of the interval)</p></li>
+<li><p><strong>low</strong> (<em>float</em>) – the minimum value for the density</p></li>
+<li><p><strong>high</strong> (<em>float</em>) – the maximum value for the density</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a RGB color</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(int, int, int)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.simulations.Simulation_Scale.ScaleDraw.convertDensityToRGB">
+<span class="sig-name descname"><span class="pre">convertDensityToRGB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">density</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[True,</span> <span class="pre">True,</span> <span class="pre">True]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.convertDensityToRGB" title="Link to this definition">¶</a></dt>
+<dd><p>Gets a value for the density of one box and returns the corresponding color</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>density</strong> (<em>float</em>) – density of the box (should be in range of the interval)</p></li>
+<li><p><strong>low</strong> (<em>float</em>) – the minimum value for the d ensity</p></li>
+<li><p><strong>high</strong> (<em>float</em>) – the maximum value for the density</p></li>
+<li><p><strong>channels</strong> – an array with 3 entries, where each entry says if the color channel should be used or not.</p></li>
+</ul>
+</dd>
+</dl>
+<p>e.g. if it’s [True, False, True], we want to use the Red and Blue channel, but not the Green channel.
+:type channels: list[bool, bool, bool]
+:return: a RGB color
+:rtype: (int, int, int)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.simulations.Simulation_Scale.ScaleDraw.convertGrayscaleToDensity">
+<span class="sig-name descname"><span class="pre">convertGrayscaleToDensity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">RGB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.convertGrayscaleToDensity" title="Link to this definition">¶</a></dt>
+<dd><p>Gets a Grayscale value of an box and returns the corresponding density of the box</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>RGB</strong> (<em>(</em><em>int</em><em>, </em><em>int</em><em>, </em><em>int</em><em>)</em>) – (red, green, blue) values</p></li>
+<li><p><strong>low</strong> (<em>float</em>) – the minimum value for the density</p></li>
+<li><p><strong>high</strong> (<em>float</em>) – the maximum value for the density</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>density value</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.simulations.Simulation_Scale.ScaleDraw.convertRGBToDensity">
+<span class="sig-name descname"><span class="pre">convertRGBToDensity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">RGB</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[True,</span> <span class="pre">True,</span> <span class="pre">True]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.convertRGBToDensity" title="Link to this definition">¶</a></dt>
+<dd><p>Gets a RGB value of an box and returns the corresponding density of the box</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>RGB</strong> (<em>(</em><em>int</em><em>, </em><em>int</em><em>, </em><em>int</em><em>)</em>) – (red, green, blue) values</p></li>
+<li><p><strong>low</strong> (<em>float</em>) – the minimum value for the density</p></li>
+<li><p><strong>high</strong> (<em>float</em>) – the maximum value for the density</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>density value</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.simulations.Simulation_Scale.ScaleDraw.createBox">
+<span class="sig-name descname"><span class="pre">createBox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.createBox" title="Link to this definition">¶</a></dt>
+<dd><p>Create a new box on the screen</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos_x</strong> – x position of the box (in pixel coordinates, not as a measurement of the distance to the center of the bar!)</p></li>
+<li><p><strong>pos_y</strong> – y position of the box, if None: use default position</p></li>
+<li><p><strong>density</strong> – density of the box, if not given: use default density = 5.0</p></li>
+<li><p><strong>boxsize</strong> – size of the box, if not given: use default boxsize = 1.0</p></li>
+<li><p><strong>index</strong> – index of the box for the dictionaries, if not given: calculated inside of the function</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>new (dynamic) box</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.simulations.Simulation_Scale.ScaleDraw.deleteAllBoxes">
+<span class="sig-name descname"><span class="pre">deleteAllBoxes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.deleteAllBoxes" title="Link to this definition">¶</a></dt>
+<dd><p>Deletes every single box in the world</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.simulations.Simulation_Scale.ScaleDraw.deleteBox">
+<span class="sig-name descname"><span class="pre">deleteBox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">box</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.deleteBox" title="Link to this definition">¶</a></dt>
+<dd><p>Delete a box from the world and from the screen.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>box</strong> (<em>Box2D.b2Body</em>) – box object which we want to delete</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.simulations.Simulation_Scale.ScaleDraw.getMaxAngle">
+<span class="sig-name descname"><span class="pre">getMaxAngle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.getMaxAngle" title="Link to this definition">¶</a></dt>
+<dd><p>Only called at start to calculate the biggest possible angle.
+Use this to have a good termination condition for the learning process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the value of the maximum possible angle</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.simulations.Simulation_Scale.ScaleDraw.internal_step">
+<span class="sig-name descname"><span class="pre">internal_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.internal_step" title="Link to this definition">¶</a></dt>
+<dd><p>Simulates the program with the given action and returns the observations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>action</strong> (<em>list</em><em>[</em><em>float</em><em>]</em>) – the action(s) the agent chooses as an array of each new positions for each box that should be moved</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>new state after step, the reward, done, info</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[np.ndarray, float, bool, dict]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.simulations.Simulation_Scale.ScaleDraw.moveAlongBar">
+<span class="sig-name descname"><span class="pre">moveAlongBar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">box</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.moveAlongBar" title="Link to this definition">¶</a></dt>
+<dd><p>Take a box and move it along the bar with the given distance</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>box</strong> (<em>Box2d.body</em>) – box to be moved along the bar</p></li>
+<li><p><strong>delta_pos</strong> (<em>float</em>) – how much should the box be moved (negative value –&gt; left, positive value –&gt; right)</p></li>
+<li><p><strong>index</strong> (<em>int</em>) – index of the box</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the moved box</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Box2d.b2Body</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.simulations.Simulation_Scale.ScaleDraw.moveBox">
+<span class="sig-name descname"><span class="pre">moveBox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">box</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deltaX</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deltaY</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.moveBox" title="Link to this definition">¶</a></dt>
+<dd><p>Move a box in the world along a given vector (deltaX,deltaY)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>box</strong> (<em>Box2d.b2Body</em>) – box to be moved</p></li>
+<li><p><strong>deltaX</strong> (<em>float</em>) – How much do we want the box to be moved to the left or right?</p></li>
+<li><p><strong>deltaY</strong> (<em>float</em>) – How much do we want the box to be moved up or down?</p></li>
+<li><p><strong>index</strong> (<em>int</em>) – need to pass this, because we create a duplicate of the given box and delete the old one</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the same box with the new positions</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Box2d.b2Body</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.simulations.Simulation_Scale.ScaleDraw.moveBoxTo">
+<span class="sig-name descname"><span class="pre">moveBoxTo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">box</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.moveBoxTo" title="Link to this definition">¶</a></dt>
+<dd><p>Place a box at a specific position on the field</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>box</strong> (<em>Box2d.b2Body</em>) – Which box should be moved?</p></li>
+<li><p><strong>x</strong> (<em>float</em>) – new x position of the box</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – new x position of the box</p></li>
+<li><p><strong>index</strong> (<em>int</em>) – index of the box</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the moved box</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Box2d.b2Body</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sciencegym.simulations.Simulation_Scale.ScaleDraw.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Scale'</span></em><a class="headerlink" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sciencegym.simulations.Simulation_Scale.ScaleDraw.observation_space">
+<span class="sig-name descname"><span class="pre">observation_space</span></span><a class="headerlink" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.observation_space" title="Link to this definition">¶</a></dt>
+<dd><p>self.observation_space = spaces.Box(low=0, high=1. if self.normalize else 255,
+shape=(self.width, self.height, 3),
+dtype=np.float32 if self.normalize else np.uint8)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.simulations.Simulation_Scale.ScaleDraw.performActions">
+<span class="sig-name descname"><span class="pre">performActions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.performActions" title="Link to this definition">¶</a></dt>
+<dd><p>Get the new positions of the boxes and translate it into actions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>actions</strong> – new positions of each box that can be moved by the agent</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.simulations.Simulation_Scale.ScaleDraw.placeBox">
+<span class="sig-name descname"><span class="pre">placeBox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">box</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.placeBox" title="Link to this definition">¶</a></dt>
+<dd><p>Place a box on the scale</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>box</strong></p></li>
+<li><p><strong>pos</strong></p></li>
+<li><p><strong>index</strong></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.simulations.Simulation_Scale.ScaleDraw.render">
+<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'human'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.render" title="Link to this definition">¶</a></dt>
+<dd><p>Render function, which runs the simulation and render it (if wished)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mode</strong> (<em>str</em>) – “human” for rendering, “state_pixels” for returning the pixel array</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>nothing if mode is human, if mode is “state_pixels”, we return the array of the screen</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.simulations.Simulation_Scale.ScaleDraw.rescaleState">
+<span class="sig-name descname"><span class="pre">rescaleState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.rescaleState" title="Link to this definition">¶</a></dt>
+<dd><p>Returns normalized version of the state</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>state</strong> (<em>np.ndarray</em>) – the normal state, which is not normalized yet</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the new normalized state</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.simulations.Simulation_Scale.ScaleDraw.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.reset" title="Link to this definition">¶</a></dt>
+<dd><p>Reset function for the whole environment. Inside of it, we reset every counter/reward, we reset the boxes, the state and all other necessary things.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the new state (normalized, if wished)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.simulations.Simulation_Scale.ScaleDraw.resetBoxes">
+<span class="sig-name descname"><span class="pre">resetBoxes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.resetBoxes" title="Link to this definition">¶</a></dt>
+<dd><p>Generate the boxes and place all of the ones that are supposed to be placed randomly</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>self.boxes, a dictionary with every box as value and its index as key</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict[int, Box2D.b2Body]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.simulations.Simulation_Scale.ScaleDraw.resetState">
+<span class="sig-name descname"><span class="pre">resetState</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.resetState" title="Link to this definition">¶</a></dt>
+<dd><p>Resets and returns the current values of the state</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the new state</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.simulations.Simulation_Scale.ScaleDraw.seed">
+<span class="sig-name descname"><span class="pre">seed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.seed" title="Link to this definition">¶</a></dt>
+<dd><p>Seed function for the random number calculation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>seed</strong> (<em>int</em>) – if None: cannot recreate the same results afterwards</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the seed</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.simulations.Simulation_Scale.ScaleDraw.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.simulations.Simulation_Scale.ScaleDraw.step" title="Link to this definition">¶</a></dt>
+<dd><p>Actual step function called by the agent</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>action</strong> (<em>list</em><em>[</em><em>float</em><em>]</em>) – the action(s) the agent chooses as an array of each new positions for each box that should be moved</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>new state after step, the reward, done, info</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[np.ndarray, float, bool, dict]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sciencegym.simulations.Simulation_Scale.rescale_movement">
+<span class="sig-prename descclassname"><span class="pre">sciencegym.simulations.Simulation_Scale.</span></span><span class="sig-name descname"><span class="pre">rescale_movement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">original_interval</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(-15,</span> <span class="pre">15)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.simulations.Simulation_Scale.rescale_movement" title="Link to this definition">¶</a></dt>
+<dd><p>Help function to do and to undo the normalization of the action and observation space</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>original_interval</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – Original interval, in which we observe the value.</p></li>
+<li><p><strong>value</strong> (<em>float</em>) – Number that should be rescaled.</p></li>
+<li><p><strong>to_interval</strong> (<em>list</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em>) – New interval, in which we want to rescale the value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Rescaled value</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="sciencegym.simulations.Simulation_SIRV.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">sciencegym.simulations.Simulation_SIRV module</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="sciencegym.simulations.simulation_interface.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">sciencegym.simulations.simulation_interface module</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2025, Mattia Cerrato</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials"></div>
+    </div>
+  </div>
+</footer>
+      <script src="_static/documentation_options.js?v=2709fde1"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/design-tabs.js?v=f930bc37"></script>
+      <script src="_static/shibuya.js?v=1d2088d1"></script></body>
+</html>

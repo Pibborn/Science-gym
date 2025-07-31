@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="violet" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>science-gym quickstart - science-gym 0.1 documentation</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Create your new problems" href="problems.html" /><link rel="prev" title="Installation Guide" href="installation.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=397bb51e" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=d0008d65" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="science-gym quickstart"/>
+<meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
+      
+      
+      <strong>science-gym</strong>
+    </a>
+    <div class="sy-head-nav" id="HeadNav">
+      <nav class="sy-head-links"><ul><li class="link"><a href="#">Quickstart</a></li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials"></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2 -translate-x-2"></span>
+          <span class="hamburger_3 -translate-x-1"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">science-gym quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="problems.html">Create your new problems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">sciencegym</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../sciencegym.html">sciencegym package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../sciencegym.agents.html">sciencegym.agents package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../sciencegym.agents.StableBaselinesAgents.html">sciencegym.agents.StableBaselinesAgents package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sciencegym.agents.TrackingCallback.html">sciencegym.agents.TrackingCallback module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../sciencegym.problems.html">sciencegym.problems package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../sciencegym.problems.Problem_Basketball.html">sciencegym.problems.Problem_Basketball module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sciencegym.problems.Problem_Brachistochrone.html">sciencegym.problems.Problem_Brachistochrone module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sciencegym.problems.Problem_InclinedPlane.html">sciencegym.problems.Problem_InclinedPlane module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sciencegym.problems.Problem_Lagrange.html">sciencegym.problems.Problem_Lagrange module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sciencegym.problems.Problem_SIRV.html">sciencegym.problems.Problem_SIRV module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sciencegym.problems.Problem_Scale.html">sciencegym.problems.Problem_Scale module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sciencegym.problems.problem_interface.html">sciencegym.problems.problem_interface module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../sciencegym.simulations.html">sciencegym.simulations package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../sciencegym.simulations.BasketballEnvironment.html">sciencegym.simulations.BasketballEnvironment module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sciencegym.simulations.BrachistochroneEnv.html">sciencegym.simulations.BrachistochroneEnv module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sciencegym.simulations.EnvironmentInterface.html">sciencegym.simulations.EnvironmentInterface module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sciencegym.simulations.GymEnv.html">sciencegym.simulations.GymEnv module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sciencegym.simulations.InclinedPlane.html">sciencegym.simulations.InclinedPlane module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sciencegym.simulations.LagrangeEnvironment.html">sciencegym.simulations.LagrangeEnvironment module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sciencegym.simulations.OrbitEnvironment.html">sciencegym.simulations.OrbitEnvironment module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sciencegym.simulations.Pendulum.html">sciencegym.simulations.Pendulum module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sciencegym.simulations.SIRVBase.html">sciencegym.simulations.SIRVBase module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sciencegym.simulations.SIRVEnvironmentOnetime.html">sciencegym.simulations.SIRVEnvironmentOnetime module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sciencegym.simulations.Simulation_Basketball.html">sciencegym.simulations.Simulation_Basketball module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sciencegym.simulations.Simulation_Brachistochrone.html">sciencegym.simulations.Simulation_Brachistochrone module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sciencegym.simulations.Simulation_InclinedPlane.html">sciencegym.simulations.Simulation_InclinedPlane module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sciencegym.simulations.Simulation_Lagrange.html">sciencegym.simulations.Simulation_Lagrange module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sciencegym.simulations.Simulation_SIRV.html">sciencegym.simulations.Simulation_SIRV module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sciencegym.simulations.Simulation_Scale.html">sciencegym.simulations.Simulation_Scale module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sciencegym.simulations.simulation_interface.html">sciencegym.simulations.simulation_interface module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sciencegym.simulations.sirv_compartments.html">sciencegym.simulations.sirv_compartments module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../sciencegym.strategies.html">sciencegym.strategies package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sciencegym.equation.html">sciencegym.equation module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#the-script">The script</a></li>
+<li><a class="reference internal" href="#running-the-example">Running the example</a></li>
+<li><a class="reference internal" href="#where-next">Where next?</a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">science-gym</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">science-gym quickstart</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+        <article class="yue" role="main">
+          <section id="science-gym-quickstart">
+<h1>science-gym quickstart<a class="headerlink" href="#science-gym-quickstart" title="Link to this heading">¶</a></h1>
+<p>This tutorial walks you through a <strong>single end‑to‑end run</strong> that</p>
+<ol class="arabic simple">
+<li><p>trains an SAC agent on the <em>Basketball</em> environment (reward <em>context 0</em>, full supervision),</p></li>
+<li><p>records successful experiments (that is, shots) in a CSV,</p></li>
+<li><p>discovers a closed‑form equation for the ball’s trajectory via <strong>PySR</strong>. The ball’s trajectory is an instance of the moral general notion of projectile motion.</p></li>
+</ol>
+<p>The complete script is &lt;<a href="#id7"><span class="problematic" id="id8">download_</span></a> <a href="#id9"><span class="problematic" id="id10">`run_single_experiment.py`_</span></a>&gt; and takes
+about 10 minutes on a modern laptop.</p>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#prerequisites" id="id3">Prerequisites</a></p></li>
+<li><p><a class="reference internal" href="#the-script" id="id4">The script</a></p></li>
+<li><p><a class="reference internal" href="#running-the-example" id="id5">Running the example</a></p></li>
+<li><p><a class="reference internal" href="#where-next" id="id6">Where next?</a></p></li>
+</ul>
+</nav>
+<section id="prerequisites">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Prerequisites</a><a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper colwidths-given docutils container">
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 41.7%" />
+<col style="width: 58.3%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>Requirement</strong></p></th>
+<th class="head"><p><strong>Install command</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Python 3.9 – 3.12</p></td>
+<td><p>–</p></td>
+</tr>
+<tr class="row-odd"><td><p>Science‑Gym (core) + RL + SymPy + PySR</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;science-gym[rl,sym]&quot;</span> <span class="pre">pysr</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Stable‑Baselines 3 (SB3)</p></td>
+<td><p><em>included in the ``rl`` extra</em></p></td>
+</tr>
+<tr class="row-odd"><td><p>Gymnasium</p></td>
+<td><p><em>pulled automatically by Science‑Gym</em></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Heavy libs such as PyTorch will be installed; use a virtual
+environment to keep your system site‑packages clean.</p>
+</div>
+</section>
+<section id="the-script">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">The script</a><a class="headerlink" href="#the-script" title="Link to this heading">¶</a></h2>
+<p>Save the following as <strong>``run_single_experiment.py``</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos"> 1</span><span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
+</span><span data-line="2"><span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+</span><span data-line="3"><span class="linenos"> 3</span>
+</span><span data-line="4"><span class="linenos"> 4</span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+</span><span data-line="5"><span class="linenos"> 5</span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+</span><span data-line="6"><span class="linenos"> 6</span>
+</span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">stable_baselines3.common.vec_env</span><span class="w"> </span><span class="kn">import</span> <span class="n">DummyVecEnv</span>
+</span><span data-line="8"><span class="linenos"> 8</span><span class="kn">from</span><span class="w"> </span><span class="nn">sciencegym.agents.StableBaselinesAgents.SACAgent</span><span class="w"> </span><span class="kn">import</span> <span class="n">SACAgent</span>
+</span><span data-line="9"><span class="linenos"> 9</span><span class="kn">from</span><span class="w"> </span><span class="nn">sciencegym.simulations.Simulation_Basketball</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sim_Basketball</span>
+</span><span data-line="10"><span class="linenos">10</span><span class="kn">from</span><span class="w"> </span><span class="nn">sciencegym.problems.Problem_Basketball</span><span class="w"> </span><span class="kn">import</span> <span class="n">Problem_Basketball</span>
+</span><span data-line="11"><span class="linenos">11</span><span class="kn">from</span><span class="w"> </span><span class="nn">sciencegym.equation</span><span class="w"> </span><span class="kn">import</span> <span class="n">Equation</span>
+</span><span data-line="12"><span class="linenos">12</span><span class="kn">from</span><span class="w"> </span><span class="nn">pysr</span><span class="w"> </span><span class="kn">import</span> <span class="n">PySRRegressor</span>
+</span><span data-line="13"><span class="linenos">13</span>
+</span><span data-line="14"><span class="linenos">14</span><span class="c1"># ------------------------------------------------------------------</span>
+</span><span data-line="15"><span class="linenos">15</span><span class="n">TIMESTEPS</span>       <span class="o">=</span> <span class="mi">50_000</span>     <span class="c1"># 2e5 for research‑grade results</span>
+</span><span data-line="16"><span class="linenos">16</span><span class="n">SUCCESS_THRESH</span>  <span class="o">=</span> <span class="mi">80</span>         <span class="c1"># Basketball reward ≥ 80 marks a “good” shot</span>
+</span><span data-line="17"><span class="linenos">17</span><span class="n">RESULTS_DIR</span>     <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;quickstart_results&quot;</span><span class="p">)</span>
+</span><span data-line="18"><span class="linenos">18</span><span class="n">RESULTS_DIR</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="19"><span class="linenos">19</span><span class="n">CSV_PATH</span>        <span class="o">=</span> <span class="n">RESULTS_DIR</span> <span class="o">/</span> <span class="s2">&quot;successful_states.csv&quot;</span>
+</span><span data-line="20"><span class="linenos">20</span><span class="c1"># ------------------------------------------------------------------</span>
+</span><span data-line="21"><span class="linenos">21</span>
+</span><span data-line="22"><span class="linenos">22</span><span class="c1"># 1) Environment + Problem wrapper</span>
+</span><span data-line="23"><span class="linenos">23</span><span class="n">sim</span>      <span class="o">=</span> <span class="n">Sim_Basketball</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">rendering</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="24"><span class="linenos">24</span><span class="n">problem</span>  <span class="o">=</span> <span class="n">Problem_Basketball</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
+</span><span data-line="25"><span class="linenos">25</span><span class="n">vec_env</span>  <span class="o">=</span> <span class="n">DummyVecEnv</span><span class="p">([</span><span class="k">lambda</span><span class="p">:</span> <span class="n">problem</span><span class="p">])</span>
+</span><span data-line="26"><span class="linenos">26</span>
+</span><span data-line="27"><span class="linenos">27</span><span class="c1"># 2) SAC agent</span>
+</span><span data-line="28"><span class="linenos">28</span><span class="n">act_dim</span>  <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span><span data-line="29"><span class="linenos">29</span><span class="n">obs_dim</span>  <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">observation_space</span><span class="o">.</span><span class="n">shape</span>
+</span><span data-line="30"><span class="linenos">30</span><span class="n">agent</span>    <span class="o">=</span> <span class="n">SACAgent</span><span class="p">(</span><span class="n">obs_dim</span><span class="p">,</span> <span class="n">act_dim</span><span class="p">,</span> <span class="n">policy</span><span class="o">=</span><span class="s2">&quot;MlpPolicy&quot;</span><span class="p">)</span>
+</span><span data-line="31"><span class="linenos">31</span><span class="n">model</span>    <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">create_model</span><span class="p">(</span><span class="n">vec_env</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span><span data-line="32"><span class="linenos">32</span><span class="n">model</span><span class="o">.</span><span class="n">learn</span><span class="p">(</span><span class="n">TIMESTEPS</span><span class="p">)</span>            <span class="c1"># training</span>
+</span><span data-line="33"><span class="linenos">33</span>
+</span><span data-line="34"><span class="linenos">34</span><span class="c1"># 3) Evaluate &amp; save successful episodes</span>
+</span><span data-line="35"><span class="linenos">35</span><span class="n">successes</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="36"><span class="linenos">36</span><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">400</span><span class="p">):</span>              <span class="c1"># evaluation roll‑outs</span>
+</span><span data-line="37"><span class="linenos">37</span>    <span class="n">obs</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">vec_env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+</span><span data-line="38"><span class="linenos">38</span>    <span class="n">done</span><span class="p">,</span> <span class="n">R</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="mf">0.0</span>
+</span><span data-line="39"><span class="linenos">39</span>    <span class="k">while</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
+</span><span data-line="40"><span class="linenos">40</span>        <span class="n">action</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">deterministic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="41"><span class="linenos">41</span>        <span class="n">obs</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">done</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">vec_env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+</span><span data-line="42"><span class="linenos">42</span>        <span class="n">R</span> <span class="o">+=</span> <span class="n">reward</span>
+</span><span data-line="43"><span class="linenos">43</span>    <span class="k">if</span> <span class="n">R</span> <span class="o">&gt;=</span> <span class="n">SUCCESS_THRESH</span><span class="p">:</span>
+</span><span data-line="44"><span class="linenos">44</span>        <span class="n">successes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;terminal_observation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+</span><span data-line="45"><span class="linenos">45</span>
+</span><span data-line="46"><span class="linenos">46</span><span class="k">if</span> <span class="ow">not</span> <span class="n">successes</span><span class="p">:</span>
+</span><span data-line="47"><span class="linenos">47</span>    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No successful shots recorded — adjust threshold.&quot;</span><span class="p">)</span>
+</span><span data-line="48"><span class="linenos">48</span>
+</span><span data-line="49"><span class="linenos">49</span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">CSV_PATH</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span data-line="50"><span class="linenos">50</span>    <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</span><span data-line="51"><span class="linenos">51</span>    <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span>
+</span><span data-line="52"><span class="linenos">52</span>    <span class="n">writer</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="n">successes</span><span class="p">)</span>
+</span><span data-line="53"><span class="linenos">53</span>
+</span><span data-line="54"><span class="linenos">54</span><span class="c1"># 4) Symbolic regression (PySR)</span>
+</span><span data-line="55"><span class="linenos">55</span><span class="c1"># Note that we pre-compute some useful variables for the final equation.</span>
+</span><span data-line="56"><span class="linenos">56</span><span class="n">df</span>      <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">CSV_PATH</span><span class="p">)</span>
+</span><span data-line="57"><span class="linenos">57</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;velocity_sin_angle&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;velocity&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;angle&quot;</span><span class="p">])</span>
+</span><span data-line="58"><span class="linenos">58</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;g&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">9.80665</span>
+</span><span data-line="59"><span class="linenos">59</span><span class="n">X</span>       <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s2">&quot;velocity_sin_angle&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;g&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+</span><span data-line="60"><span class="linenos">60</span><span class="n">y</span>       <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;ball_y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+</span><span data-line="61"><span class="linenos">61</span>
+</span><span data-line="62"><span class="linenos">62</span><span class="n">model_sr</span> <span class="o">=</span> <span class="n">PySRRegressor</span><span class="p">(</span>
+</span><span data-line="63"><span class="linenos">63</span>    <span class="n">niterations</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+</span><span data-line="64"><span class="linenos">64</span>    <span class="n">binary_operators</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">],</span>
+</span><span data-line="65"><span class="linenos">65</span>    <span class="n">unary_operators</span><span class="o">=</span><span class="p">[],</span>
+</span><span data-line="66"><span class="linenos">66</span>    <span class="n">model_selection</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">,</span>
+</span><span data-line="67"><span class="linenos">67</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">variable_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;v*sin(θ)&quot;</span><span class="p">,</span> <span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="s2">&quot;g&quot;</span><span class="p">])</span>
+</span><span data-line="68"><span class="linenos">68</span>
+</span><span data-line="69"><span class="linenos">69</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Discovered expressions:&quot;</span><span class="p">)</span>
+</span><span data-line="70"><span class="linenos">70</span><span class="nb">print</span><span class="p">(</span><span class="n">model_sr</span><span class="p">)</span>
+</span><span data-line="71"><span class="linenos">71</span>
+</span><span data-line="72"><span class="linenos">72</span><span class="c1"># 5) Compare to ground‑truth</span>
+</span><span data-line="73"><span class="linenos">73</span><span class="n">best</span> <span class="o">=</span> <span class="n">model_sr</span><span class="o">.</span><span class="n">get_best</span><span class="p">()</span><span class="o">.</span><span class="n">sympy_format</span>
+</span><span data-line="74"><span class="linenos">74</span><span class="n">gt_eq</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">solution</span><span class="p">()</span>        <span class="c1"># returns sciencegym.equation.Equation</span>
+</span><span data-line="75"><span class="linenos">75</span><span class="n">mse</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">yhat</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">y</span> <span class="o">-</span> <span class="n">yhat</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+</span><span data-line="76"><span class="linenos">76</span>
+</span><span data-line="77"><span class="linenos">77</span><span class="n">y_pred</span> <span class="o">=</span> <span class="n">Equation</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">best</span><span class="p">))</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</span><span data-line="78"><span class="linenos">78</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">MSE(best) = </span><span class="si">{</span><span class="n">mse</span><span class="p">(</span><span class="n">y_pred</span><span class="p">)</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="79"><span class="linenos">79</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MSE(GT)   = </span><span class="si">{</span><span class="n">mse</span><span class="p">(</span><span class="n">gt_eq</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">df</span><span class="p">))</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span data-line="80"><span class="linenos">80</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Ground‑truth: </span><span class="si">{</span><span class="n">gt_eq</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="running-the-example">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Running the example</a><a class="headerlink" href="#running-the-example" title="Link to this heading">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">python<span class="w"> </span>run_single_experiment.py
+</span></pre></div>
+</div>
+<p>Console output (abridged):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">Discovered expressions:
+</span><span data-line="2">1.6 * (v*sin(θ)) * t - 4.9 * t^2
+</span><span data-line="3">...
+</span><span data-line="4">MSE(best) = 8.3e-04
+</span><span data-line="5">MSE(GT)   = 2.1e-16
+</span><span data-line="6">Ground‑truth: (v*sin(θ))*t - 4.905*t**2
+</span></pre></div>
+</div>
+<p>You should be able to recover the equation for projectile motion, up to a constant.</p>
+</section>
+<section id="where-next">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Where next?</a><a class="headerlink" href="#where-next" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Replace <code class="docutils literal notranslate"><span class="pre">TIMESTEPS</span></code> with <code class="docutils literal notranslate"><span class="pre">200_000</span></code> to gather more data.</p></li>
+<li><p>Switch <code class="docutils literal notranslate"><span class="pre">Sim_Basketball</span></code> → <code class="docutils literal notranslate"><span class="pre">SIRVOneTimeVaccination</span></code> or
+<code class="docutils literal notranslate"><span class="pre">Sim_Lagrange</span></code> and update the preprocessing as in
+<a href="#id1"><span class="problematic" id="id2">:pyfile:`threshold_and_save.py &lt;threshold_and_save.py&gt;`</span></a> to reproduce the
+full paper pipeline.</p></li>
+<li><p>Use the <em>multi‑context</em> driver script (<code class="docutils literal notranslate"><span class="pre">threshold_and_save.py</span></code>) to run the
+entire benchmark automatically.</p></li>
+</ul>
+<p>Happy experimenting!</p>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="installation.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Installation Guide</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="problems.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Create your new problems</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2025, Mattia Cerrato</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials"></div>
+    </div>
+  </div>
+</footer>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/shibuya.js?v=1d2088d1"></script></body>
+</html>

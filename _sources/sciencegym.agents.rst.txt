@@ -1,0 +1,26 @@
+sciencegym.agents package
+=========================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   sciencegym.agents.StableBaselinesAgents
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   sciencegym.agents.TrackingCallback
+
+Module contents
+---------------
+
+.. automodule:: sciencegym.agents
+   :members:
+   :undoc-members:
+   :show-inheritance:

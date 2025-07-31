@@ -1,0 +1,7 @@
+sciencegym.problems.Problem\_SIRV module
+========================================
+
+.. automodule:: sciencegym.problems.Problem_SIRV
+   :members:
+   :undoc-members:
+   :show-inheritance:

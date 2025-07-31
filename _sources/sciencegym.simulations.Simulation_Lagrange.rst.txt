@@ -1,0 +1,7 @@
+sciencegym.simulations.Simulation\_Lagrange module
+==================================================
+
+.. automodule:: sciencegym.simulations.Simulation_Lagrange
+   :members:
+   :undoc-members:
+   :show-inheritance:

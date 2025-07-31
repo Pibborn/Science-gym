@@ -1,0 +1,7 @@
+sciencegym.simulations.Simulation\_Scale module
+===============================================
+
+.. automodule:: sciencegym.simulations.Simulation_Scale
+   :members:
+   :undoc-members:
+   :show-inheritance:

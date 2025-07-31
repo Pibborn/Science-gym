@@ -1,0 +1,7 @@
+sciencegym
+==========
+
+.. toctree::
+   :maxdepth: 4
+
+   sciencegym

@@ -1,0 +1,7 @@
+sciencegym.simulations.BasketballEnvironment module
+===================================================
+
+.. automodule:: sciencegym.simulations.BasketballEnvironment
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="violet" data-content_root="./">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>sciencegym.problems.problem_interface module - science-gym 0.1 documentation</title><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="sciencegym.simulations package" href="sciencegym.simulations.html" /><link rel="prev" title="sciencegym.problems.Problem_Scale module" href="sciencegym.problems.Problem_Scale.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="_static/pygments.css?v=397bb51e" />
+    <link rel="stylesheet" type="text/css" href="_static/shibuya.css?v=d0008d65" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="_static/print.css?v=20ff2c19" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="sciencegym.problems.problem_interface module"/>
+<meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="index.html">
+      
+      
+      <strong>science-gym</strong>
+    </a>
+    <div class="sy-head-nav" id="HeadNav">
+      <nav class="sy-head-links"><ul><li class="link"><a href="usage/quickstart.html">Quickstart</a></li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials"></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2 -translate-x-2"></span>
+          <span class="hamburger_3 -translate-x-1"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="usage/installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/quickstart.html">science-gym quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/problems.html">Create your new problems</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">sciencegym</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="sciencegym.html">sciencegym package</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="sciencegym.agents.html">sciencegym.agents package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.agents.StableBaselinesAgents.html">sciencegym.agents.StableBaselinesAgents package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.agents.TrackingCallback.html">sciencegym.agents.TrackingCallback module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 current"><a class="reference internal" href="sciencegym.problems.html">sciencegym.problems package</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.problems.Problem_Basketball.html">sciencegym.problems.Problem_Basketball module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.problems.Problem_Brachistochrone.html">sciencegym.problems.Problem_Brachistochrone module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.problems.Problem_InclinedPlane.html">sciencegym.problems.Problem_InclinedPlane module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.problems.Problem_Lagrange.html">sciencegym.problems.Problem_Lagrange module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.problems.Problem_SIRV.html">sciencegym.problems.Problem_SIRV module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.problems.Problem_Scale.html">sciencegym.problems.Problem_Scale module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">sciencegym.problems.problem_interface module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="sciencegym.simulations.html">sciencegym.simulations package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.BasketballEnvironment.html">sciencegym.simulations.BasketballEnvironment module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.BrachistochroneEnv.html">sciencegym.simulations.BrachistochroneEnv module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.EnvironmentInterface.html">sciencegym.simulations.EnvironmentInterface module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.GymEnv.html">sciencegym.simulations.GymEnv module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.InclinedPlane.html">sciencegym.simulations.InclinedPlane module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.LagrangeEnvironment.html">sciencegym.simulations.LagrangeEnvironment module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.OrbitEnvironment.html">sciencegym.simulations.OrbitEnvironment module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.Pendulum.html">sciencegym.simulations.Pendulum module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.SIRVBase.html">sciencegym.simulations.SIRVBase module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.SIRVEnvironmentOnetime.html">sciencegym.simulations.SIRVEnvironmentOnetime module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.Simulation_Basketball.html">sciencegym.simulations.Simulation_Basketball module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.Simulation_Brachistochrone.html">sciencegym.simulations.Simulation_Brachistochrone module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.Simulation_InclinedPlane.html">sciencegym.simulations.Simulation_InclinedPlane module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.Simulation_Lagrange.html">sciencegym.simulations.Simulation_Lagrange module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.Simulation_SIRV.html">sciencegym.simulations.Simulation_SIRV module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.Simulation_Scale.html">sciencegym.simulations.Simulation_Scale module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.simulation_interface.html">sciencegym.simulations.simulation_interface module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sciencegym.simulations.sirv_compartments.html">sciencegym.simulations.sirv_compartments module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="sciencegym.strategies.html">sciencegym.strategies package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sciencegym.equation.html">sciencegym.equation module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#sciencegym.problems.problem_interface.ProblemInterface"><code class="docutils literal notranslate"><span class="pre">ProblemInterface</span></code></a><ul>
+<li><a class="reference internal" href="#sciencegym.problems.problem_interface.ProblemInterface.simulation"><code class="docutils literal notranslate">simulation</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.problems.problem_interface.ProblemInterface.observation_space"><code class="docutils literal notranslate">observation_space</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.problems.problem_interface.ProblemInterface.action_space"><code class="docutils literal notranslate">action_space</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.problems.problem_interface.ProblemInterface.evaluation"><code class="docutils literal notranslate">evaluation()</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.problems.problem_interface.ProblemInterface.get_action_space"><code class="docutils literal notranslate">get_action_space()</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.problems.problem_interface.ProblemInterface.get_current_state"><code class="docutils literal notranslate">get_current_state()</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.problems.problem_interface.ProblemInterface.get_simulation"><code class="docutils literal notranslate">get_simulation()</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.problems.problem_interface.ProblemInterface.get_state_space"><code class="docutils literal notranslate">get_state_space()</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.problems.problem_interface.ProblemInterface.solution"><code class="docutils literal notranslate">solution()</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.problems.problem_interface.ProblemInterface.step"><code class="docutils literal notranslate">step()</span></code></a></li>
+<li><a class="reference internal" href="#sciencegym.problems.problem_interface.ProblemInterface.validate_context"><code class="docutils literal notranslate">validate_context()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="index.html"><span itemprop="name">science-gym</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="modules.html"><span itemprop="name">sciencegym</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="sciencegym.html"><span itemprop="name">sciencegym package</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="3" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="sciencegym.problems.html"><span itemprop="name">sciencegym.problems package</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="4" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">sciencegym.problems.problem_interface module</strong>
+        <meta itemprop="position" content="5" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+        <article class="yue" role="main">
+          <section id="module-sciencegym.problems.problem_interface">
+<span id="sciencegym-problems-problem-interface-module"></span><h1>sciencegym.problems.problem_interface module<a class="headerlink" href="#module-sciencegym.problems.problem_interface" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="sciencegym.problems.problem_interface.ProblemInterface">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sciencegym.problems.problem_interface.</span></span><span class="sig-name descname"><span class="pre">ProblemInterface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="sciencegym.simulations.simulation_interface.html#sciencegym.simulations.simulation_interface.SimulationInterface" title="sciencegym.simulations.simulation_interface.SimulationInterface"><span class="pre">SimulationInterface</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.problems.problem_interface.ProblemInterface" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>High‑level wrapper that turns a domain‑specific
+<code class="xref py py-class docutils literal notranslate"><span class="pre">SimulationInterface</span></code>
+into a Gym‑style environment component.</p>
+<p>The class does <strong>not</strong> inherit from <code class="xref py py-class docutils literal notranslate"><span class="pre">gym.Env</span></code> on purpose;
+instead it exposes Gym‑compatible <em>spaces</em> so that downstream
+wrappers (or RL frameworks such as Stable‑Baselines3) can use
+them to validate actions and observations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sim</strong> (<a class="reference internal" href="sciencegym.simulations.simulation_interface.html#sciencegym.simulations.simulation_interface.SimulationInterface" title="sciencegym.simulations.simulation_interface.SimulationInterface"><em>SimulationInterface</em></a>) – Concrete simulation that implements at least:
+<code class="docutils literal notranslate"><span class="pre">step</span></code>, <code class="docutils literal notranslate"><span class="pre">reset</span></code>, <code class="docutils literal notranslate"><span class="pre">get_state_space</span></code> and
+<code class="docutils literal notranslate"><span class="pre">get_action_space</span></code>.  See <a class="reference internal" href="#sciencegym.problems.problem_interface.ProblemInterface.simulation" title="sciencegym.problems.problem_interface.ProblemInterface.simulation"><code class="xref py py-attr docutils literal notranslate"><span class="pre">simulation</span></code></a>
+attribute below for details.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sciencegym.problems.problem_interface.ProblemInterface.simulation">
+<span class="sig-name descname"><span class="pre">simulation</span></span><a class="headerlink" href="#sciencegym.problems.problem_interface.ProblemInterface.simulation" title="Link to this definition">¶</a></dt>
+<dd><p>Handle to the low‑level physics, chemistry or
+epidemiology simulator (depending on the chosen
+Science‑Gym task).  All environment dynamics are
+delegated to this object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="sciencegym.simulations.simulation_interface.html#sciencegym.simulations.simulation_interface.SimulationInterface" title="sciencegym.simulations.simulation_interface.SimulationInterface">SimulationInterface</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sciencegym.problems.problem_interface.ProblemInterface.observation_space">
+<span class="sig-name descname"><span class="pre">observation_space</span></span><a class="headerlink" href="#sciencegym.problems.problem_interface.ProblemInterface.observation_space" title="Link to this definition">¶</a></dt>
+<dd><p>Space describing the structure, bounds and dtype of
+observations returned by the simulator.  Required by
+every Gym‑compatible environment to enable sampling,
+shape introspection, and automatic sanity checks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gym.spaces.Space</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sciencegym.problems.problem_interface.ProblemInterface.action_space">
+<span class="sig-name descname"><span class="pre">action_space</span></span><a class="headerlink" href="#sciencegym.problems.problem_interface.ProblemInterface.action_space" title="Link to this definition">¶</a></dt>
+<dd><p>Space that defines the legal actions the agent may send
+to <code class="xref py py-meth docutils literal notranslate"><span class="pre">simulation.step()</span></code>.  Ensures that RL
+algorithms can clamp, sample, or otherwise reason about
+admissible controls.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gym.spaces.Space</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">sciencegym.problems</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pendulum</span>
+</span><span data-line="2"><span class="gp">&gt;&gt;&gt; </span><span class="n">core_sim</span> <span class="o">=</span> <span class="n">Pendulum</span><span class="p">()</span>
+</span><span data-line="3"><span class="gp">&gt;&gt;&gt; </span><span class="n">env</span> <span class="o">=</span> <span class="n">ProblemInterface</span><span class="p">(</span><span class="n">core_sim</span><span class="p">)</span>
+</span><span data-line="4"><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">observation_space</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>   <span class="c1"># e.g. (3,)</span>
+</span><span data-line="5"><span class="gp">&gt;&gt;&gt; </span><span class="n">sample_action</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span>
+</span><span data-line="6"><span class="gp">&gt;&gt;&gt; </span><span class="n">next_state</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">sample_action</span><span class="p">)</span>
+</span></pre></div>
+</div>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>This adapter is part of <em>Science‑Gym</em>, a research benchmark</p></li>
+</ul>
+<p>intended for agents that <strong>actively design and conduct
+experiments</strong> before attempting tasks such as symbolic
+regression on the generated data.
+* Because <cite>ProblemInterface</cite> defers the full Gym five‑tuple
+logic to higher‑level wrappers, it is lightweight and easy
+to subclass when adding new scientific domains.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.problems.problem_interface.ProblemInterface.evaluation">
+<span class="sig-name descname"><span class="pre">evaluation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">candidate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="sciencegym.equation.html#sciencegym.equation.Equation" title="sciencegym.equation.Equation"><span class="pre">Equation</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.DataFrame</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.problems.problem_interface.ProblemInterface.evaluation" title="Link to this definition">¶</a></dt>
+<dd><p>Performs evaluation of the candidate solution to the current Problem.
+Since :class:<a href="#id1"><span class="problematic" id="id2">`</span></a>Problem`s might have more than one solution, this is evaluated
+against all available solutions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>candidate</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Equation</span></code>) – The current</p></li>
+<li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pd.DataFrame</span></code>) – _description_</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>_description_</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>_type_</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.problems.problem_interface.ProblemInterface.get_action_space">
+<span class="sig-name descname"><span class="pre">get_action_space</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.problems.problem_interface.ProblemInterface.get_action_space" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieve the action space definition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Space object describing the legal range, shape and dtype of
+admissible actions.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>gym.spaces.Space</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.problems.problem_interface.ProblemInterface.get_current_state">
+<span class="sig-name descname"><span class="pre">get_current_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.problems.problem_interface.ProblemInterface.get_current_state" title="Link to this definition">¶</a></dt>
+<dd><p>Mirrored from Simulation.
+Return the most recently observed state <strong>without</strong> advancing the simulation.</p>
+<p>Useful for logging, inspection or state‑feedback control that needs
+the raw observation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Snapshot of the current state held internally by the simulation.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.problems.problem_interface.ProblemInterface.get_simulation">
+<span class="sig-name descname"><span class="pre">get_simulation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.problems.problem_interface.ProblemInterface.get_simulation" title="Link to this definition">¶</a></dt>
+<dd><p>Expose the wrapped <code class="xref py py-class docutils literal notranslate"><span class="pre">Simulation</span></code> instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The underlying simulation object—handy for unit tests, visualisers
+or fine‑grained diagnostic tools that need direct access.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Simulation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.problems.problem_interface.ProblemInterface.get_state_space">
+<span class="sig-name descname"><span class="pre">get_state_space</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.problems.problem_interface.ProblemInterface.get_state_space" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieve the observation/state space definition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A Gym‐compatible space object (e.g. <code class="xref py py-class docutils literal notranslate"><span class="pre">gym.spaces.Box</span></code> or
+<code class="xref py py-class docutils literal notranslate"><span class="pre">gym.spaces.Dict</span></code>) describing the dimensionality, bounds and
+dtype of observations emitted by the environment.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>gym.spaces.Space</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.problems.problem_interface.ProblemInterface.solution">
+<span class="sig-name descname"><span class="pre">solution</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.problems.problem_interface.ProblemInterface.solution" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the solution or solutions for the current problem.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.problems.problem_interface.ProblemInterface.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.problems.problem_interface.ProblemInterface.step" title="Link to this definition">¶</a></dt>
+<dd><p>Advance the simulation by <strong>one</strong> control cycle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>action</strong> (<em>numpy.ndarray</em>) – Experimental action to be performed.  Its datatype and shape must conform to
+<a class="reference internal" href="#sciencegym.problems.problem_interface.ProblemInterface.action_space" title="sciencegym.problems.problem_interface.ProblemInterface.action_space"><code class="xref py py-attr docutils literal notranslate"><span class="pre">action_space</span></code></a>, which is delegated to the underlying
+simulation.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Whatever the wrapped <code class="xref py py-meth docutils literal notranslate"><span class="pre">Simulation.step()</span></code> returns.  In most
+Gym‑style simulators this will be the 5‑tuple
+<code class="docutils literal notranslate"><span class="pre">(next_obs,</span> <span class="pre">reward,</span> <span class="pre">terminated,</span> <span class="pre">truncated,</span> <span class="pre">info)</span></code>; in lighter
+setups it may be just <code class="docutils literal notranslate"><span class="pre">next_obs</span></code>.  Refer to your
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Simulation</span></code> implementation for the exact signature.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>No extra post‑processing or validation is performed—the call is passed
+straight through.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sciencegym.problems.problem_interface.ProblemInterface.validate_context">
+<span class="sig-name descname"><span class="pre">validate_context</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sciencegym.problems.problem_interface.ProblemInterface.validate_context" title="Link to this definition">¶</a></dt>
+<dd><p>Validates the context of the problem’s simulation, see Section 4.2
+of <a class="reference external" href="https://dl.acm.org/doi/10.1007/978-3-031-78977-9_15">https://dl.acm.org/doi/10.1007/978-3-031-78977-9_15</a>.
+Currently, work in progress.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="sciencegym.problems.Problem_Scale.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">sciencegym.problems.Problem_Scale module</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="sciencegym.simulations.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">sciencegym.simulations package</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2025, Mattia Cerrato</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials"></div>
+    </div>
+  </div>
+</footer>
+      <script src="_static/documentation_options.js?v=2709fde1"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/design-tabs.js?v=f930bc37"></script>
+      <script src="_static/shibuya.js?v=1d2088d1"></script></body>
+</html>

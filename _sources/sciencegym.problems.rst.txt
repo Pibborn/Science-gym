@@ -1,0 +1,24 @@
+sciencegym.problems package
+===========================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   sciencegym.problems.Problem_Basketball
+   sciencegym.problems.Problem_Brachistochrone
+   sciencegym.problems.Problem_InclinedPlane
+   sciencegym.problems.Problem_Lagrange
+   sciencegym.problems.Problem_SIRV
+   sciencegym.problems.Problem_Scale
+   sciencegym.problems.problem_interface
+
+Module contents
+---------------
+
+.. automodule:: sciencegym.problems
+   :members:
+   :undoc-members:
+   :show-inheritance:

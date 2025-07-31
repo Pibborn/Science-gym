@@ -1,0 +1,24 @@
+sciencegym.agents.StableBaselinesAgents package
+===============================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   sciencegym.agents.StableBaselinesAgents.A2CAgent
+   sciencegym.agents.StableBaselinesAgents.AgentInterface
+   sciencegym.agents.StableBaselinesAgents.CustomAgent
+   sciencegym.agents.StableBaselinesAgents.HERAgent
+   sciencegym.agents.StableBaselinesAgents.PPOAgent
+   sciencegym.agents.StableBaselinesAgents.SACAgent
+   sciencegym.agents.StableBaselinesAgents.StableBaselinesAgent
+
+Module contents
+---------------
+
+.. automodule:: sciencegym.agents.StableBaselinesAgents
+   :members:
+   :undoc-members:
+   :show-inheritance:

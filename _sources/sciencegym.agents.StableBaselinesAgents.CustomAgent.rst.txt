@@ -1,0 +1,7 @@
+sciencegym.agents.StableBaselinesAgents.CustomAgent module
+==========================================================
+
+.. automodule:: sciencegym.agents.StableBaselinesAgents.CustomAgent
+   :members:
+   :undoc-members:
+   :show-inheritance:

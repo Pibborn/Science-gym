@@ -1,0 +1,7 @@
+sciencegym.problems.Problem\_InclinedPlane module
+=================================================
+
+.. automodule:: sciencegym.problems.Problem_InclinedPlane
+   :members:
+   :undoc-members:
+   :show-inheritance:

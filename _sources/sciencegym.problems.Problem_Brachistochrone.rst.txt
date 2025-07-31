@@ -1,0 +1,7 @@
+sciencegym.problems.Problem\_Brachistochrone module
+===================================================
+
+.. automodule:: sciencegym.problems.Problem_Brachistochrone
+   :members:
+   :undoc-members:
+   :show-inheritance:

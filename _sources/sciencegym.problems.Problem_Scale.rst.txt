@@ -1,0 +1,7 @@
+sciencegym.problems.Problem\_Scale module
+=========================================
+
+.. automodule:: sciencegym.problems.Problem_Scale
+   :members:
+   :undoc-members:
+   :show-inheritance:

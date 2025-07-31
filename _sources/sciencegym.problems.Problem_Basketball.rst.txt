@@ -1,0 +1,7 @@
+sciencegym.problems.Problem\_Basketball module
+==============================================
+
+.. automodule:: sciencegym.problems.Problem_Basketball
+   :members:
+   :undoc-members:
+   :show-inheritance:

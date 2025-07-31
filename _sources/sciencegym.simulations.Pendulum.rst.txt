@@ -1,0 +1,7 @@
+sciencegym.simulations.Pendulum module
+======================================
+
+.. automodule:: sciencegym.simulations.Pendulum
+   :members:
+   :undoc-members:
+   :show-inheritance:
