@@ -176,7 +176,11 @@ class ProblemInterface:
         """
         y_pred = candidate.evaluate(data)
         solution = self.solution()
-        if type(solution) is list:
+        if hasattr(self, 'target'):
+            return np.mean((data.loc[:,self.target] - y_pred) ** 2)
+        elif self.solution() is None:
+            return None
+        elif type(solution) is list:
             return [np.mean((single_solution.evaluate(data) - y_pred) ** 2) for single_solution in solution ]
         else:
             y_true = self.solution().evaluate(data)
