@@ -25,7 +25,12 @@ class Equation:
         return sp.count_ops(self.expr)
 
     def __eq__(self, other):
-        return sp.simplify(self.expr - other.expr) == 0
+        try:
+            eq = sp.simplify(self.expr - other.expr) == 0
+            return eq
+        except Exception as e:
+            return False
+
 
     def __str__(self):
         return str(self.expr)
