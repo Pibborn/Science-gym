@@ -1,0 +1,70 @@
+[
+    {
+        "environment": "DROPFRICTION",
+        "context": 0,
+        "target": "y",
+        "equation": "9.29916300000000e-5",
+        "complexity": 0,
+        "mse": 1.0424859367638917e-09,
+        "gt_mse": null,
+        "score": 0.0,
+        "time_rl": 323.1512100696564,
+        "time_sr": 19.457786321640015,
+        "#_record_dict": {
+            "#_records_saved": 418,
+            "#_possible_states": 550,
+            "SuccesRate": 0.76,
+            "avg_reward": 2.867738723754883
+        }
+    },
+    {
+        "environment": "DROPFRICTION",
+        "context": 0,
+        "target": "y",
+        "equation": "avg_vel*0.0031999596",
+        "complexity": 1,
+        "mse": 5.193201123786984e-10,
+        "gt_mse": null,
+        "score": 0.34842148617504964
+    },
+    {
+        "environment": "DROPFRICTION",
+        "context": 0,
+        "target": "y",
+        "equation": "sin(-0.99679935*avg_vel + avg_vel)",
+        "complexity": 2,
+        "mse": 5.193205327075453e-10,
+        "gt_mse": null,
+        "score": 8.986120422966463e-07
+    },
+    {
+        "environment": "DROPFRICTION",
+        "context": 0,
+        "target": "y",
+        "equation": "avg_vel*rec*width*(-0.4129276 + 1.3652909)*cos(width)/1.3652909",
+        "complexity": 5,
+        "mse": 4.4640817039278214e-10,
+        "gt_mse": null,
+        "score": 0.018910497517673847
+    },
+    {
+        "environment": "DROPFRICTION",
+        "context": 0,
+        "target": "y",
+        "equation": "(drop_length*(drop_length*width - 1*(-2.2914352))*drop_length*1.7438521*drop_length - 1*(-2.2914352))*drop_length*1.7438521*sin(drop_length)",
+        "complexity": 10,
+        "mse": 4.078536269343902e-10,
+        "gt_mse": null,
+        "score": 0.011290708152757652
+    },
+    {
+        "environment": "DROPFRICTION",
+        "context": 0,
+        "target": "y",
+        "equation": "drop_length*drop_length - ((avg_vel - width*sin(-avg_vel + avg_vel))*0.99679935 - sin(avg_vel - width*sin(-avg_vel + avg_vel)))",
+        "complexity": 5,
+        "mse": 3.0582977788891154e-10,
+        "gt_mse": null,
+        "score": 0.14393895269301538
+    }
+]
