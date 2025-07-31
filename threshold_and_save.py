@@ -139,14 +139,6 @@ def record_successful_episodes(agent, problem, csv_path, threshold):
             obs, reward, done, info = vec_env.step(action)
             t += 1
             reward_sum += reward
-            t += 1
-            if done or t == 200:
-                terminal_obs = vec_env.buf_infos[0]["terminal_observation"]
-                episode = vec_env.buf_infos[0].get("record_episode", np.array([np.nan]))
-                if reward_sum >= threshold:
-                    states.append(terminal_obs)
-                    episodes += episode
-                break
             if isinstance(problem, Problem_DropFriction):
                 possible_states += 1
                 if reward >= threshold:
@@ -213,8 +205,8 @@ def preprocess_dataframe(df, env_key):
 
     if env_key == "LAGRANGE":
         df["d"] = (
-            df["body_2_mass"] / (df["body_1_mass"] + df["body_2_mass"])
-        ) * df["distance_b1_b2"]
+                          df["body_2_mass"] / (df["body_1_mass"] + df["body_2_mass"])
+                  ) * df["distance_b1_b2"]
 
     if env_key == "DROPFRICTION":
         loaded_scaler_Y = joblib.load(f'/home/jbrugger/PycharmProjects/Science-gym/environments/drop_friction_models/Teflon-Au-Ethylene Glycol/scaler_Y.pkl')
