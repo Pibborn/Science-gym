@@ -17,9 +17,11 @@ from collections import deque
 
 
 class Sim_DropFriction(gym.Env):
+    cumulated_reward = []
+    zero_reward = []
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 30}
 
-    def __init__(self, g=10.0):
+    def __init__(self, context):
         self.in_features = {
             'time': {'low': -2, 'high': 5},
             'tilt_angle': {'low': -2, 'high': 2}
@@ -36,8 +38,11 @@ class Sim_DropFriction(gym.Env):
         self.screen = None
         self.isopen = True
         self.actions_sofar = ActionsSofar()
-        self.max_num_experiments = 100
+        self.max_num_experiments = 10
         self.num_experiments = 0
+        self.context = context
+        self.sum_reward = 0
+        self.zero_rewards = 0
 
         system = 'Teflon-Au-Ethylene Glycol'
 
@@ -76,11 +81,19 @@ class Sim_DropFriction(gym.Env):
         )
 
     def step(self, u):
+        #string = f"current state: {self.state}"
         observation = self.model(torch.tensor(u, dtype=torch.float32))
         observation = observation.detach().cpu().numpy()
         reward = self.get_reward(u)
-        self.actions_sofar.memory.append(u)
+        self.sum_reward += reward
+        if reward == -1:
+            self.zero_rewards += 1
+        #string = f"{string}: action: {u} new observation: {observation}  reward: {reward}"
+        # print(string)
         done = self.max_num_experiments <= self.num_experiments
+        if done:
+            Sim_DropFriction.cumulated_reward.append(self.sum_reward)
+            Sim_DropFriction.zero_reward.append(self.zero_rewards)
         info = {}
         self.state = self._get_state(observation)
         self.num_experiments +=1
@@ -93,16 +106,17 @@ class Sim_DropFriction(gym.Env):
         time = action[0]
         tilt_angle = action[1]
         if time < -1.7:
-            return 0
+            return -1
         elif time > 1.7:
-            return 0
+            return -1
         elif time > np.exp(-tilt_angle):
-            return 0
+            return -1
         else:
             distance = [mean_absolute_error(action, past_action) for
                         past_action in self.actions_sofar.memory]
+            self.actions_sofar.memory.append(action)
             if len(distance) > 0:
-                return min(max(distance) + 0.1, 1)
+                return max(0,min(min(distance) , 1))
             else:
                 return 1
 
@@ -113,15 +127,16 @@ class Sim_DropFriction(gym.Env):
             return_info: bool = False,
             options: Optional[dict] = None
     ):
-        super().reset(seed=seed)
+        super().reset()
         self.actions_sofar = ActionsSofar()
-        self.max_num_experiments = 100
         self.num_experiments = 0
         self.state = self._get_state(self.np_random.uniform(
             low=[self.out_features[feature]['low'] for feature in self.out_features],
             high=[self.out_features[feature]['high'] for feature in self.out_features]
         )
         )
+        self.sum_reward = 0
+        self.zero_rewards = 0
         return self.state
 
     def render(self, mode="human"):
