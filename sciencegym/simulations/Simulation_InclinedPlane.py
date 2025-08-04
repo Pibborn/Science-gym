@@ -172,7 +172,7 @@ class Sim_InclinedPlane(SimulationInterface):
         self.normalize = False
 
         # Pygame setup
-        self.rendering = True
+        self.rendering = False
         if self.rendering:
             pygame.init()
 

@@ -10,7 +10,7 @@ class Problem_SIRV(ProblemInterface):
                           'vaccinated', 'transmission_rate', 'recovery_rate']
 
     def solution(self):
-        return Equation('1 - recovery_rate / transmission_rate ')
+        return Equation('1 - recovery_rate / transmission_rate')
 
     #def evaluate(self, candidate: Equation, data: pd.DataFrame):
     #    y_true = self.solution().evaluate(data)

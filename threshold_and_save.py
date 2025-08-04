@@ -83,9 +83,9 @@ ENV_CONFIG: Dict[str, Dict] = {
 }
 
 SUCCESS_THR: Dict[str, float] = {
-    "BASKETBALL": 80,
-    "SIRV": -0.3,
-    "LAGRANGE": 0.7,
+    "BASKETBALL": 90,
+    "SIRV":       -0.3,
+    "LAGRANGE":   0.9,
     "PLANE": -0.1,
     "DROPFRICTION": 0.1,
 }
@@ -171,6 +171,7 @@ def record_successful_episodes(agent, problem, csv_path, threshold):
               newline="") as f:
         writer = csv.writer(f)
         writer.writerow(vec_env.envs[0].variables + ["time"])
+        writer.writerows([e.flatten() for e in episodes])
     record_dict = {
         '#_records_saved': len(states),
         '#_possible_states': possible_states,
@@ -248,11 +249,17 @@ def run_symbolic_regression(csv_path, cfg, env_key, problem) -> List[Dict]:
 
         model = PySRRegressor(
             model_selection="best",
-            niterations=80,
+            niterations=40,
             binary_operators=["*", "-", "+", "/"],
             unary_operators=['sqrt', 'sin', 'cos'],
-            progress=False,
-            parsimony=0.3
+            progress=True,
+            random_state=1337,
+            should_simplify=True,
+            deterministic=True,
+            parallelism='serial',
+            maxsize=10,
+            complexity_of_constants=3,
+            weight_optimize=0.001
         ).fit(X, y_true, variable_names=in_cols)
         if ground_truth is None:
             gt_mse = None

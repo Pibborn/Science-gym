@@ -3,7 +3,6 @@ import numpy as np
 from pysr import PySRRegressor
 from sciencegym.equation import Equation
 
-
 from sciencegym.problems.Problem_SIRV import Problem_SIRV
 from sciencegym.problems.Problem_Basketball import Problem_Basketball
 from sciencegym.problems.Problem_InclinedPlane import Problem_InclinedPlane

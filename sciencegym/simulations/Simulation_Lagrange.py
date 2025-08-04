@@ -121,9 +121,9 @@ class Sim_Lagrange(SimulationInterface):
         if self.context == 0:
             return np.exp(-difference * 10 / self.distance)
         if self.context == 1:
-            return np.exp(-difference * 10 / self.distance) + np.random.normal(0, 0.2)
+            return np.exp(-difference * 10 / self.distance) + np.random.normal(0, 0.1)
         if self.context == 2:
-            return int(difference <= 1e-3)
+            return int(difference <= 1e-2)
         else:
             raise NotImplementedError('Currently, context {} is not implemented\
                                        in LagrangeEnvironment'.format(self.context))
