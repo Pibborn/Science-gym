@@ -1,6 +1,7 @@
 import json
 import os
 import csv
+from datetime import datetime
 from pathlib import Path
 from itertools import product
 from typing import Dict, List
@@ -15,6 +16,12 @@ from tqdm import tqdm
 
 from sciencegym.agents.StableBaselinesAgents.PPOAgent import PPOAgent
 from sciencegym.agents.StableBaselinesAgents.SACAgent import SACAgent
+from sciencegym.agents.StableBaselinesAgents.A2CAgent import A2CAgent
+from sciencegym.config.config_basketball import ConfigBasketball
+from sciencegym.config.config_general import ConfigGeneral
+from sciencegym.config.config_gplearn import ConfigGPlearn
+from sciencegym.config.config_pysr import ConfigPySR
+from sciencegym.config.config_rl_agent import ConfigRLAgent
 from sciencegym.problems.Problem_DropFriction import Problem_DropFriction
 from sciencegym.simulations.Simulation_Basketball import Sim_Basketball
 from sciencegym.simulations.Simulation_DropFriction import Sim_DropFriction
@@ -40,14 +47,6 @@ def mse(y_true: np.ndarray, y_pred: np.ndarray) -> float:
 
 
 ENV_CONFIG: Dict[str, Dict] = {
-    "BASKETBALL": dict(
-        sim_cls=Sim_Basketball,
-        prob_cls=Problem_Basketball,
-        input_cols=["velocity_sin_angle", "time", "g"],
-        output_col="ball_y",
-        downsample=False,
-        every_n=10,
-    ),
     "SIRV": dict(
         sim_cls=SIRVOneTimeVaccination,
         prob_cls=Problem_SIRV,
@@ -83,16 +82,11 @@ ENV_CONFIG: Dict[str, Dict] = {
 }
 
 SUCCESS_THR: Dict[str, float] = {
-    "BASKETBALL": 90,
     "SIRV":       -0.3,
     "LAGRANGE":   0.9,
     "PLANE": -0.1,
     "DROPFRICTION": 0.1,
 }
-
-TIMESTEPS = 30_000
-TEST_EPISODES = 50
-RESULTS_DIR = Path("results")
 
 
 def get_env_dims(env):
@@ -107,18 +101,27 @@ def get_env_dims(env):
     return in_dim, out_dim
 
 
-def train_agent(sim, problem):
+def train_agent(args, sim, problem):
     """Return a trained SACAgent on `sim`."""
     vec_env = DummyVecEnv([lambda: problem])
     in_dim, out_dim = get_env_dims(sim)
-    agent = SACAgent(in_dim, out_dim, lr=1e-4, policy="MlpPolicy")
-    model = agent.create_model(vec_env, verbose=0, use_sde=False)
-    model.learn(TIMESTEPS, log_interval=1000)
+    if args.rl_agent == 'SAC':
+        agent = SACAgent(in_dim, out_dim,
+                         lr=args.lr,
+                         policy=args.policy)
+    elif args.rl_agent == 'A2C':
+        agent = A2CAgent(in_dim, out_dim, lr=args.lr,
+                         policy=args.policy
+                         )
+    else:
+        raise NotImplementedError(f"Unrecognized RL agent: {args.rl_agent}")
+    model = agent.create_model(vec_env, verbose=args.verbose)
+    model.learn(args.rl_train_steps, log_interval=1000)
     agent.agent = model
     return agent, problem
 
 
-def record_successful_episodes(agent, problem, csv_path, threshold):
+def record_successful_episodes(args, agent, problem, csv_path, threshold):
     """Roll out evaluation episodes, store those above reward threshold."""
     print('Evaluating...')
     vec_env = DummyVecEnv([lambda: problem])
@@ -128,7 +131,7 @@ def record_successful_episodes(agent, problem, csv_path, threshold):
     reward_sum_all_episodes = 0
     num_full_episodes = 0
 
-    for _ in range(TEST_EPISODES):
+    for _ in range(args.rl_test_episodes):
         obs = vec_env.reset()
         done, reward_sum, t = False, 0.0, 0
         while not done:
@@ -143,10 +146,10 @@ def record_successful_episodes(agent, problem, csv_path, threshold):
                 possible_states += 1
                 if reward >= threshold:
                     states.append(obs)
-                if done or t == 200:
+                if done or t == args.t_end_test:
                     break
             else:
-                if done or t == 200:
+                if done or t == args.t_end_test:
                     possible_states += 1
                     terminal_obs = vec_env.buf_infos[0]["terminal_observation"]
                     episode = vec_env.buf_infos[0].get("record_episode", np.array([np.nan]))
@@ -158,8 +161,9 @@ def record_successful_episodes(agent, problem, csv_path, threshold):
         num_full_episodes += 1
 
     if len(states) == 0:
-        print("No successful episodes found: nothing to record.")
-        return 0 
+        raise RuntimeError(f"No successful episodes found: nothing to record."
+                           f" You can try to increase the rl_test_episodes or "
+                           f"lower the success_thr")
 
     # flatten and write
     with open(csv_path, "w", newline="") as f:
@@ -184,8 +188,8 @@ def record_successful_episodes(agent, problem, csv_path, threshold):
     return record_dict
 
 
-def preprocess_dataframe(df, env_key):
-    if env_key == "BASKETBALL":
+def preprocess_dataframe(args, df):
+    if args.simulation == "basketball":
         # normalise per episode
         df["episode"] = (df["time"] < df["time"].shift()).cumsum()
         df = df[df["episode"] < 50]
@@ -204,12 +208,12 @@ def preprocess_dataframe(df, env_key):
         df["velocity_sin_angle"] = df["velocity"] * np.sin(df["angle"])
         df["g"] = -9.80665
 
-    if env_key == "LAGRANGE":
+    if args.simulation == "lagrange":
         df["d"] = (
                           df["body_2_mass"] / (df["body_1_mass"] + df["body_2_mass"])
                   ) * df["distance_b1_b2"]
 
-    if env_key == "DROPFRICTION":
+    if args.simulation == "drop_friction":
         loaded_scaler_Y = joblib.load(f'/home/jbrugger/PycharmProjects/Science-gym/environments/drop_friction_models/Teflon-Au-Ethylene Glycol/scaler_Y.pkl')
         df = pd.DataFrame(
             loaded_scaler_Y.inverse_transform(
@@ -219,25 +223,25 @@ def preprocess_dataframe(df, env_key):
     return df
 
 
-def run_symbolic_regression(csv_path, cfg, env_key, problem) -> List[Dict]:
+def run_symbolic_regression(args, csv_file, problem) -> List[Dict]:
     """Fit PySR and return a list of result dicts."""
-    rows = []
-    if env_key == "BASKETBALL":
-        csv_path = csv_path.with_name(csv_path.stem + "_episodes.csv")
-    print(f'Opening {csv_path}')
-    df = pd.read_csv(csv_path)
-    df = preprocess_dataframe(df, env_key)
+    results_sr = {'overview' : {}}
+    if args.simulation == "basketball":
+        csv_file =csv_file.with_name(csv_file.stem + "_episodes.csv")
+    print(f'Opening {csv_file}')
+    df = pd.read_csv(csv_file)
+    df = preprocess_dataframe(args, df)
 
-    if cfg["downsample"]:
-        df = df.iloc[:: cfg["every_n"]].reset_index(drop=True)
+    if args.downsample:
+        df = df.iloc[:: args.every_n].reset_index(drop=True)
 
-    if env_key == "LAGRANGE":
+    if args.simulation == "lagrange":
         targets = [
-            ("bod_3_posX", cfg["input_cols"]),
+            ("bod_3_posX", args.input_cols),
             ("bod_3_posY", ["distance_b1_b2"]),
         ]
     else:
-        targets = [(cfg["output_col"], cfg["input_cols"])]
+        targets = [(args.output_col, args.input_cols)]
 
     ground_truth = problem.solution()
     for out_col, in_cols in targets:
@@ -248,18 +252,18 @@ def run_symbolic_regression(csv_path, cfg, env_key, problem) -> List[Dict]:
         X = df[in_cols].values
 
         model = PySRRegressor(
-            model_selection="best",
-            niterations=40,
-            binary_operators=["*", "-", "+", "/"],
-            unary_operators=['sqrt', 'sin', 'cos'],
-            progress=True,
-            random_state=1337,
-            should_simplify=True,
-            deterministic=True,
-            parallelism='serial',
-            maxsize=10,
-            complexity_of_constants=3,
-            weight_optimize=0.001
+            model_selection=args.model_selection,
+            niterations=args.niterations,
+            binary_operators=args.binary_operators,
+            unary_operators=args.unary_operators,
+            progress=args.progress,
+            random_state=args.seed,
+            should_simplify=args.should_simplify,
+            deterministic=args.deterministic,
+            parallelism=args.parallelism,
+            maxsize=args.maxsize,
+            complexity_of_constants=args.complexity_of_constants,
+            weight_optimize=args.weight_optimize,
         ).fit(X, y_true, variable_names=in_cols)
         if ground_truth is None:
             gt_mse = None
@@ -276,88 +280,110 @@ def run_symbolic_regression(csv_path, cfg, env_key, problem) -> List[Dict]:
         else:
             gt_mse = mse(y_true, ground_truth.evaluate(df))
 
-        for _, r in model.equations_.iterrows():
+        for i, r in model.equations_.iterrows():
             expr = str(r["sympy_format"])
             eq = Equation(expr)
-            mse = problem.evaluation(eq, data=df)
-            rows.append(
-                dict(
-                    environment=env_key,
-                    context=problem.simulation.context,
+            evaluation_dict = problem.evaluation(eq, data=df)
+            results_sr[i] = dict(
                     target=out_col,
                     equation=expr,
                     complexity=int(eq.complexity()),
-                    mse=mse,
+                    evaluation=evaluation_dict,
                     gt_mse=gt_mse,
-                    score=r["score"]
+                    pysr_score=r["score"]
                 )
-            )
 
             print(f"Equation: {eq}, MSE: {mse}, Equality: {eq == ground_truth}")
 
         print(f'Expected result: {ground_truth}')
 
-    return rows
+    return results_sr
 
 
 def main():
-    RESULTS_DIR.mkdir(exist_ok=True)
-    parser = ArgumentParser('Run experiments with the "Threshold and Save" strategy')
-    parser.add_argument('--env', default='all', choices=[k.lower() for k in ENV_CONFIG.keys()])
-    parser.add_argument('--context', type=int, default=0, choices=[0, 1, 2])
-    parser.add_argument('--regress-only', help='Run regression only', action='store_true')
+    __pre_parser = ConfigGeneral.arguments_parser()
+    pre_args, _ = __pre_parser.parse_known_args()
+
+    parser = ConfigGeneral.arguments_parser()
+    parser = ConfigRLAgent.arguments_parser(parser)
+
+    if pre_args.equation_discoverer == 'pysr':
+        parser = ConfigPySR.arguments_parser(parser)
+    if pre_args.equation_discoverer == 'gplearn':
+        parser = ConfigGPlearn.arguments_parser(parser)
+    if pre_args.simulation == 'basketball':
+        parser = ConfigBasketball.arguments_parser(parser)
+
     args = parser.parse_args()
+    if args.simulation == 'basketball':
+        sim = Sim_Basketball(
+            args=args,
+            seed=args.seed,
+            normalize=args.normalize,
+            rendering=args.rendering,
+            raw_pixels=args.raw_pixels,
+            random_ball_size=args.random_ball_size,
+            random_density=args.random_density,
+            random_basket=args.random_basket,
+            random_ball_position=args.random_ball_position,
+            walls=args.walls,
+            context=args.context
+        )
+        problem = Problem_Basketball(sim=sim)
 
-    # run on all problems or singular one?
-    if args.env == 'all':
-        ctx = (0, 1, 2)
-        env_key = ENV_CONFIG.keys()
-        runs = product(env_key, ctx)
+    args.result_dir = (args.root_dir / args.result_dir / args.exp_name / args.rl_agent
+                       /args.context/ f"seed_{args.seed}"
+                       / f"{datetime.now().strftime('%Y_%b_%d_%H_%M')}")
+    print(f"Experiments result will be saved to {args.result_dir}")
+    args.result_dir.mkdir(exist_ok=True, parents=True)
+    with open(args.result_dir / 'arguments.json', "w") as outfile:
+        json.dump(cast_to_serialize(vars(args)), outfile, indent=4)
+    print(f"\n=== Training {args.simulation} (context={args.context}) ===")
+    start_time = time.time()
+    records_dict = {}
+    if args.regress_only:
+        csv_file = args.root_dir /  args.path_to_regression_table
+        if not csv_file.exists():
+            raise FileExistsError(f"File {csv_file} does not exist")
+        end_time_rl = time.time()
     else:
-        ctx = args.context
-        env_key = args.env.upper()
-        runs = [(env_key, ctx)]
+        print('Training RL agent...')
+        csv_file = args.result_dir/ "successful_states.csv"
+        agent, problem = train_agent(args, sim, problem)
+        end_time_rl = time.time()
 
-    for run in runs:
-        start_time = time.time()
-        env_key, ctx = run
-        cfg = ENV_CONFIG[env_key]
-        thr = SUCCESS_THR[env_key]
-        print(f"\n=== Training {env_key} (context={ctx}) ===")
+        records_dict = record_successful_episodes(
+            args,
+            agent,
+            problem,
+            csv_path = csv_file,
+            threshold=args.success_thr
+        )
 
-        if 'basket' in str(cfg["sim_cls"]).lower():
-            print('Basketball: rendering off')
-            kwargs = {'rendering': False}
-        else:
-            kwargs = {}
+    results = run_symbolic_regression(args, csv_file, problem)
+    end_time_sr = time.time()
 
-        # set up output directories and csv
-        out_dir = RESULTS_DIR / f"{env_key}_ctx{ctx}"
-        out_dir.mkdir(parents=True, exist_ok=True)
-        csv_file = out_dir / "successful_states.csv"
+    results['overview']['time_rl'] = end_time_rl - start_time
+    results['overview']['time_sr'] = end_time_sr - end_time_rl
+    results['overview']['#_record_dict'] = records_dict
+    results['overview']['done'] = True
 
-        # set up simulation and problem
-        sim = cfg["sim_cls"](context=ctx, **kwargs)
-        problem = cfg['prob_cls'](sim)
-        records_dict = {}
-        if not args.regress_only:
-            print('Training RL agent...')
-            agent, problem = train_agent(sim, problem)
-            end_time_rl = time.time()
+    print(f"Results saved in : { args.result_dir/ 'results_sr.json'}")
+    with open(args.result_dir / 'results_sr.json', "w") as outfile:
+        json.dump(cast_to_serialize(results), outfile, indent=4)
 
-            records_dict = record_successful_episodes(agent, problem, csv_file, threshold=thr)
-            if records_dict['#_records_saved'] == 0:
-                continue
-
-        results = run_symbolic_regression(csv_file, cfg, env_key, problem)
-        end_time_sr = time.time()
-        results[0]['time_rl'] = end_time_rl - start_time
-        results[0]['time_sr'] = end_time_sr - end_time_rl
-        results[0]['#_record_dict'] = records_dict
-        print(f"Results saved in : {f'{out_dir}/results_sr.json'}")
-        with open(f"{out_dir}/results_sr.json", "w") as outfile:
-            json.dump(results, outfile, indent=4)
-
+def cast_to_serialize(element):
+    if isinstance(element, dict):
+        return {k: cast_to_serialize(v) for k, v in element.items()}
+    if isinstance(element, list):
+        return [cast_to_serialize(v) for v in element]
+    if isinstance(element, tuple):
+        return tuple([cast_to_serialize(v) for v in element])
+    if isinstance(element, Path):
+        return str(element)
+    if isinstance(element, np.ndarray):
+        return element.tolist()
+    return element
 
 if __name__ == "__main__":
     main()

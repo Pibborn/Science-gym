@@ -15,7 +15,8 @@ TARGET_FPS = 60
 TIME_STEP = 1.0 / TARGET_FPS
 
 class Ball:
-    def __init__(self, world, x, y, angle, velocity, radius=1.0, density=1.0, delta_x=0, delta_y=0):
+    def __init__(self, args,  world, x, y, angle, velocity, radius=1.0, density=1.0, delta_x=0, delta_y=0):
+        self.args = args
         self.world = world
 
         self.x, self.y = x, y
@@ -107,8 +108,9 @@ class Basket:
 
 
 class Sim_Basketball(EnvironmentInterface):
-    def __init__(self, seed=None, normalize=False, rendering=True, raw_pixels=False, random_ball_size=True,
-                 random_density=False, random_basket=False, random_ball_position=True, walls=0, context=0):
+    def __init__(self, args, seed=None, normalize=False, rendering=True, raw_pixels=False, random_ball_size=True,
+                 random_density=False, random_basket=False, random_ball_position=True, walls=0, context='classic'):
+        self.args = args
         # should the size of the ball be fixed or random?
         self.random_ball_size = random_ball_size
         # should the density of the ball be fixed or random?
@@ -199,12 +201,15 @@ class Sim_Basketball(EnvironmentInterface):
             r = -10
         else:
             r = 0
-        if self.context == 0:
+        if self.context == 'classic':
             return r
-        elif self.context == 1:
-            return r + np.random.normal(1, 10)
-        elif self.context == 2:
+        elif self.context == 'noise':
+            return r + np.random.normal(1, self.args.noise_scale)
+        elif self.context == 'sparse':
             return r >= 99
+        else:
+            raise NotImplementedError(f"Context {self.context} not implemented")
+
 
     def testFailed(self):
         ball_x, ball_y = self.updateState()[0:2]
@@ -230,7 +235,7 @@ class Sim_Basketball(EnvironmentInterface):
         density = self.ball.density
         radius = self.ball.radius
         del self.ball
-        self.ball = Ball(self.world, x=x, y=y, angle=0, velocity=0, radius=radius,
+        self.ball = Ball(self.args, self.world, x=x, y=y, angle=0, velocity=0, radius=radius,
                          density=density)  # , delta_x=delta_x, delta_y=delta_y)
         self.world = self.ball.get_world()
         self.ball.ball.linearVelocity = b2Vec2(delta_x, delta_y)
@@ -278,7 +283,7 @@ class Sim_Basketball(EnvironmentInterface):
             ball_x, ball_y = self.world_width * 0.4, self.world_height * 0.6
         ball_radius = self.np_random.uniform(0.5, 1.5) if self.random_ball_size else 1.0
         ball_density = self.np_random.uniform(4, 6) if self.random_density else 5.0
-        self.ball = Ball(self.world, x=ball_x, y=ball_y, angle=0, velocity=0, radius=ball_radius, density=ball_density)
+        self.ball = Ball(self.args, self.world, x=ball_x, y=ball_y, angle=0, velocity=0, radius=ball_radius, density=ball_density)
         self.world = self.ball.get_world()
 
         # reset the basket

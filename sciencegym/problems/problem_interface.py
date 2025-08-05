@@ -174,17 +174,34 @@ class ProblemInterface:
         Returns:
             _type_: _description_
         """
+        evaluation_dict = {}
         y_pred = candidate.evaluate(data)
         solution = self.solution()
         if hasattr(self, 'target'):
-            return np.mean((data.loc[:,self.target] - y_pred) ** 2)
+            evaluation_dict['MSE'] = np.mean((data.loc[:,self.target] - y_pred) ** 2)
+            evaluation_dict['MAE'] = np.mean(np.abs(data.loc[:, self.target] - y_pred))
+            evaluation_dict['RMAE'] = np.mean(
+                np.abs(data.loc[:, self.target] - y_pred) / np.std(data.loc[:, self.target])
+            )
         elif self.solution() is None:
-            return None
+            pass
         elif type(solution) is list:
-            return [np.mean((single_solution.evaluate(data) - y_pred) ** 2) for single_solution in solution ]
+            evaluation_dict['MSE'] =[
+                np.mean((single_solution.evaluate(data) - y_pred) ** 2)
+                for single_solution in solution ]
+            evaluation_dict['MAE'] =[
+                np.abs((single_solution.evaluate(data) - y_pred))
+                for single_solution in solution ]
+            evaluation_dict['RMAE'] =[
+                np.abs((single_solution.evaluate(data) - y_pred)) / np.std(single_solution.evaluate(data))
+                for single_solution in solution ]
         else:
             y_true = self.solution().evaluate(data)
-            return np.mean((y_true - y_pred) ** 2)
+            evaluation_dict['MSE'] = np.mean((y_true - y_pred) ** 2)
+            evaluation_dict['MAE'] = np.mean(np.abs(y_true - y_pred) )
+            evaluation_dict['RMAE'] = np.mean(np.abs(y_true - y_pred) / np.std(y_true))
+
+        return evaluation_dict
 
     def validate_context(self):
         '''
