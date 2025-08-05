@@ -206,7 +206,7 @@ class Sim_Basketball(EnvironmentInterface):
         elif self.context == 'noise':
             return r + np.random.normal(1, self.args.noise_scale)
         elif self.context == 'sparse':
-            return r >= 99
+            return r >= self.args.sparse_thr
         else:
             raise NotImplementedError(f"Context {self.context} not implemented")
 

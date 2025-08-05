@@ -1,0 +1,3 @@
+[submodule "sciencegym/SyntaxTree"]
+	path = sciencegym/SyntaxTree
+	url = https://github.com/wwjbrugger/SyntaxTree.git

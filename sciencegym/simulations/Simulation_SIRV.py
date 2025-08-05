@@ -171,9 +171,10 @@ class SIRVEnvironment(SimulationInterface, ABC):
 
 
 class SIRVOneTimeVaccination(SIRVEnvironment):
-    def __init__(self, population=10_000, record_training: bool = False, recording_interval: int = 150,
-                 context: int = 0):
+    def __init__(self, args, population=10_000, record_training: bool = False, recording_interval: int = 150,
+                 context: str = 'classic'):
         super().__init__(0, 0, population)
+        self.args = args
         self.visualize_training: bool = record_training
         self.recorded_episodes: list = []
         self.context = context
@@ -197,12 +198,15 @@ class SIRVOneTimeVaccination(SIRVEnvironment):
 
     def get_reward(self):
         # calculate reward according to distance from one-to-one infection rate
-        if self.context == 0:
+        if self.context == 'classic':
             return -abs(self.SIRV_model.infected - self.initial_infected) / self.initial_infected * 100
-        elif self.context == 1:
-            return -abs(self.SIRV_model.infected - self.initial_infected) / self.initial_infected * 100 + np.random.normal(0, 1)
-        elif self.context == 2:
-            return (-abs(self.SIRV_model.infected - self.initial_infected) / self.initial_infected * 100) >= -0.01 
+        elif self.context == 'noise':
+            return (-abs(self.SIRV_model.infected - self.initial_infected) / self.initial_infected * 100 +
+                    np.random.normal(self.args.noise_loc, self.args.noise_scale))
+        elif self.context == 'sparse':
+            return (-abs(self.SIRV_model.infected - self.initial_infected) / self.initial_infected * 100) >= self.args.sparse_thr
+        else:
+            raise NotImplementedError(f"Context {self.context} not implemented")
 
 
 

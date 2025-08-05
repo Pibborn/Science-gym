@@ -22,7 +22,7 @@ class ConfigGeneral():
                             help="Path to project")
         parser.add_argument("--result_dir", type=str, default='results',
                             help="Where to load the datasets")
-        parser.add_argument('--regress-only',
+        parser.add_argument('--regress_only',
                             help='Run regression only', type=str2bool, default=False)
         parser.add_argument('--path_to_regression_table',
                             help='Path from the repo root to the data used in the regression',

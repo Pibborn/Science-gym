@@ -35,6 +35,8 @@ class ConfigBasketball():
         parser.add_argument('--t_end_test', type=int, default=200, help='Number of walls')
         parser.add_argument('--noise_scale', type=float, default=10, help='Scale of noise')
         parser.add_argument('--noise_loc', type=float, default=1, help='Mean of noise')
+        parser.add_argument('--sparse_thr', type=float, default=99,
+                            help='Which reward must be archived to get a positive reward')
 
 
 
