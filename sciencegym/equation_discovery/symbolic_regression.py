@@ -44,7 +44,7 @@ def preprocess_dataframe(args, df):
                   ) * df["distance_b1_b2"]
 
     if args.simulation == "drop_friction":
-        loaded_scaler_Y = joblib.load(f'/home/jbrugger/PycharmProjects/Science-gym/environments/drop_friction_models/Teflon-Au-Ethylene Glycol/scaler_Y.pkl')
+        loaded_scaler_Y = joblib.load(f'{args.root_dir}/environments/drop_friction_models/Teflon-Au-Ethylene Glycol/scaler_Y.pkl')
         df = pd.DataFrame(
             loaded_scaler_Y.inverse_transform(
                 df),
