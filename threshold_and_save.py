@@ -23,38 +23,6 @@ import time
 
 from sciencegym.utils.utils import save_arguments, save_results, get_exsisting_csv_path
 
-ENV_CONFIG: Dict[str, Dict] = {
-    "LAGRANGE": dict(
-        sim_cls=Sim_Lagrange,
-        prob_cls=Problem_Lagrange,
-        input_cols=["distance_b1_b2", "d"],
-        output_col=None,
-        downsample=False,
-        every_n=3,
-    ),
-    "PLANE": dict(
-        sim_cls=Sim_InclinedPlane,
-        prob_cls=Problem_InclinedPlane,
-        input_cols=["mass", "gravity", "angle"],
-        output_col="force",
-        downsample=False,
-        every_n=1,
-    ),
-    "DROPFRICTION": dict(
-        sim_cls=Sim_DropFriction,
-        prob_cls=Problem_DropFriction,
-        input_cols=['drop_length', 'adv', 'rec', 'avg_vel', "width"],
-        output_col="y",
-        downsample=False,
-        every_n=1,
-    ),
-}
-
-SUCCESS_THR: Dict[str, float] = {
-    "LAGRANGE": 0.9,
-    "PLANE": -0.1,
-    "DROPFRICTION": 0.1,
-}
 
 
 def get_env_dims(env):
@@ -162,7 +130,7 @@ def main():
     problem, sim = get_sim_and_problem(args)
 
     args.result_dir = (args.root_dir / args.result_dir / args.exp_name
-                       / args.rl_agent / args.equation_discoverer
+                       / args.simulation / args.rl_agent / args.equation_discoverer
                        / args.context / f"seed_{args.seed}"
                        / f"{datetime.now().strftime('%Y_%b_%d_%H_%M')}")
     save_arguments(args)

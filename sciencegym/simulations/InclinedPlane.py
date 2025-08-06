@@ -171,7 +171,7 @@ class InclinePlaneCoordinates():
 class InclinedPlane(gym.Env):
     name = "InclinedPlane-v1"  # Name of the class to display
 
-    def __init__(self, rendering=True, random_densities=False, random_boxsizes=False, normalize=False, placed=1,
+    def __init__(self, args, rendering=True, random_densities=False, random_boxsizes=False, normalize=False, placed=1,
                  actions=1, sides=2, raw_pixels=False):
         """
         Initialization of the Scale Environment
@@ -196,6 +196,7 @@ class InclinedPlane(gym.Env):
         # hilfsvariablen --------------
 
         # ------------------------------
+        self.args
         self.np_random = None
         self.seed()
         self.num_envs = 1  # for stable-baseline3

@@ -1,6 +1,9 @@
 from sciencegym.config.config_basketball import ConfigBasketball
+from sciencegym.config.config_dropfriction import ConfigDropFriction
 from sciencegym.config.config_general import ConfigGeneral
 from sciencegym.config.config_gplearn import ConfigGPlearn
+from sciencegym.config.config_lagrange import ConfigLagrange
+from sciencegym.config.config_plane import ConfigPlane
 from sciencegym.config.config_pysr import ConfigPySR
 from sciencegym.config.config_rl_agent import ConfigRLAgent
 from sciencegym.config.config_sirv import ConfigSIRV
@@ -23,6 +26,12 @@ def parse_arguments():
         parser = ConfigBasketball.arguments_parser(parser)
     elif pre_args.simulation == 'sirv':
         parser = ConfigSIRV.arguments_parser(parser)
+    elif pre_args.simulation == 'lagrange':
+        parser = ConfigLagrange.arguments_parser(parser)
+    elif pre_args.simulation == 'drop_friction':
+        parser = ConfigDropFriction.arguments_parser(parser)
+    elif pre_args.simulation == 'plane':
+        parser = ConfigPlane.arguments_parser(parser)
     else:
         raise Exception(f'Unknown simulation type: {pre_args.simulation}')
     args = parser.parse_args()

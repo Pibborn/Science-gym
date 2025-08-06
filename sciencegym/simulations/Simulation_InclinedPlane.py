@@ -161,8 +161,9 @@ class InclinePlaneCoordinates():
 
 class Sim_InclinedPlane(SimulationInterface):
 
-    def __init__(self, use_analytical_simulation = True, context=0):
+    def __init__(self, args, use_analytical_simulation = True, context='classic'):
         super().__init__()
+        self.args = args
         self.context = context
 
         self.use_analytical_simulation = use_analytical_simulation
@@ -435,10 +436,10 @@ class Sim_InclinedPlane(SimulationInterface):
         if self.normalize:
             return self.rescaleState(), reward, done, info
         
-        if self.context == 1:
-            reward = reward + np.random.normal(0, 0.5)
-        if self.context == 2:
-            reward = (reward >= 0.99) * reward
+        if self.context == 'noise':
+            reward = reward + np.random.normal(self.args.noise_loc, self.args.noise_scale)
+        if self.context == 'sparse':
+            reward = (reward >= self.args.sparse_thr) * reward
         return self.state, reward, done, info
 
     def performAction(self, action):

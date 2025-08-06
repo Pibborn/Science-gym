@@ -41,8 +41,8 @@ class Body:
 
 
 class LagrangeEnv(Env):
-    def __init__(self, propagation_angle: int = PROPAGATION_ANGLE, rendering: bool = False, animate: bool = False,
-                 context=0) -> None:
+    def __init__(self,args, propagation_angle: int = PROPAGATION_ANGLE, rendering: bool = False, animate: bool = False,
+                 context='classic') -> None:
         """An environment for a two dimensional 3-body problem which an agent wants to learn
 
         Args:
@@ -52,6 +52,7 @@ class LagrangeEnv(Env):
             context (optional): integer number from 0 to 4, to determine the scope of rewards given
                                 by the simulation
         """
+        self.args = args
         self.propagation_angle = propagation_angle
         self.rendering = rendering
         self.animate = animate
@@ -106,12 +107,12 @@ class LagrangeEnv(Env):
         # calculate the distance between the 3rd body and its expected position
 
         difference = float(np.linalg.norm(action - self.pos_expected))
-        if self.context == 0:
+        if self.context == 'classic':
             return np.exp(-difference * 10 / self.distance)
-        if self.context == 1:
-            return np.exp(-difference * 10 / self.distance) + np.random.normal(0, 1)
-        if self.context == 2:
-            return np.exp(-difference * 10 / self.distance) * np.random.binomial(1, 0.1)
+        if self.context == 'noise':
+            return np.exp(-difference * 10 / self.distance) + np.random.normal(self.args.noise_loc, self.args.noise_scale)
+        if self.context == 'sparse':
+            return np.exp(-difference * 10 / self.distance) * np.random.binomial(1, self.args.sparse_p)
         else:
             raise NotImplementedError('Currently, context {} is not implemented\
                                        in LagrangeEnvironment'.format(self.context))
@@ -360,3 +361,9 @@ class LagrangeEnv(Env):
 
     def seed(self, num):
         random.seed(num)
+
+    def get_state_space(self):
+        return self.observation_space
+
+    def get_current_state(self):
+        return self.get_observation()

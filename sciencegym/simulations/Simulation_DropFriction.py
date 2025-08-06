@@ -21,7 +21,8 @@ class Sim_DropFriction(gym.Env):
     zero_reward = []
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 30}
 
-    def __init__(self, context):
+    def __init__(self, args, context):
+        self.args = args
         self.in_features = {
             'time': {'low': -2, 'high': 5},
             'tilt_angle': {'low': -2, 'high': 2}
@@ -106,19 +107,30 @@ class Sim_DropFriction(gym.Env):
         time = action[0]
         tilt_angle = action[1]
         if time < -1.7:
-            return -1
+            reward =  -1
         elif time > 1.7:
-            return -1
+            reward = -1
         elif time > np.exp(-tilt_angle):
-            return -1
+            reward = -1
         else:
             distance = [mean_absolute_error(action, past_action) for
                         past_action in self.actions_sofar.memory]
             self.actions_sofar.memory.append(action)
             if len(distance) > 0:
-                return max(0,min(min(distance) , 1))
+                reward = max(0,min(min(distance) , 1))
             else:
-                return 1
+                reward = 1
+        if self.context == 'classic':
+            return reward
+        if self.context == 'noise':
+            return reward + np.random.normal(self.args.noise_loc, self.args.noise_scale)
+        if self.context == 'sparse':
+            return reward >= self.args.sparse_thr
+        else:
+            raise NotImplementedError('Currently, context {} is not implemented\
+                                       in DropFriction'.format(self.context))
+
+
 
     def reset(
             self,
