@@ -106,9 +106,11 @@ class Sim_DropFriction(gym.Env):
     def get_reward(self, action):
         time = action[0]
         tilt_angle = action[1]
-        if time < -1.7:
+        if tilt_angle < -1.7:
             reward =  -1
-        elif time > 1.7:
+        elif tilt_angle > 1.7:
+            reward = -1
+        elif time < -1.3:
             reward = -1
         elif time > np.exp(-tilt_angle):
             reward = -1
