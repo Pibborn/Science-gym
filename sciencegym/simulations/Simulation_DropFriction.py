@@ -115,7 +115,7 @@ class Sim_DropFriction(gym.Env):
         elif time > np.exp(-tilt_angle):
             reward = -1
         else:
-            distance = [mean_absolute_error(action, past_action) for
+            distance = [np.sum(np.abs(action - past_action)) for
                         past_action in self.actions_sofar.memory]
             self.actions_sofar.memory.append(action)
             if len(distance) > 0:

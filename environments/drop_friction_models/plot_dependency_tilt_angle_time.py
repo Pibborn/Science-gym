@@ -32,24 +32,24 @@ def run():
     data = define_data_structure()
     get_files(args, data)
     filtered_dfs = prepare_dataset(args, data['files'])
-    plot_scaled_input_features(filtered_dfs, loaded_scaler_X)
+    plot_scaled_input_features(args, filtered_dfs, loaded_scaler_X)
 
     plot_scaled_output_features(args, filtered_dfs)
 
 
 
 
-def plot_scaled_input_features(filtered_dfs, loaded_scaler_X):
+def plot_scaled_input_features(args, filtered_dfs, loaded_scaler_X):
     tilt_angle_array = filtered_dfs.loc[:, 'tilt_angle'].to_numpy()
     time_array = filtered_dfs.loc[:, 'time'].to_numpy()
     X = loaded_scaler_X.transform(np.column_stack((time_array, tilt_angle_array)))
     time_array = X[:, 0]
     tilt_angle_array = X[:, 1]
-    fig, ax = plt.subplots(figsize=(4, 4))
-    ax.scatter(tilt_angle_array, time_array, label='true data')
+    fig, ax = plt.subplots(figsize=(2, 2), dpi = 500)
+    ax.scatter(tilt_angle_array, time_array, label='true data', s = 3)
     x = np.arange(-1.7, 1.7, 0.05)
     y = np.exp(-1 * x +0.0)
-    ax.plot(x, y, label='border', color='red')
+    ax.plot(x, y, label='border', color='red',)
 
     y = np.arange(-1.2, 6.2, 1)
     ax.plot([-1.7 for i in range(len(y))], y, color='red')
@@ -57,9 +57,10 @@ def plot_scaled_input_features(filtered_dfs, loaded_scaler_X):
     y = np.arange(-1.2, 0.3, 0.1)
     ax.plot([1.7 for i in range(len(y))], y, color='red')
     ax.plot(x, [-1.3 for i in range(len(x))], color='red')
-    ax.set(xlabel='tilt angle', ylabel='time')
+    ax.set(xlabel='tilt angle $\\alpha$', ylabel='time $t$')
+    print(f"Figure is saved to: {ROOT_DIR / f'environments/drop_friction_models/{args.system}/dependency_tilt_angle.png'}")
     fig.tight_layout()
-    # fig.savefig(args.save_path / 'learning_curve.png')
+    fig.savefig(ROOT_DIR / f'environments/drop_friction_models/{args.system}/dependency_tilt_angle.png')
     fig.show()
 
 
@@ -68,7 +69,7 @@ def plot_scaled_output_features(args, filtered_dfs):
     Y = filtered_dfs.loc[:, ['drop_length', 'adv', 'rec', 'avg_vel', 'width', 'y']]
     Y = pd.DataFrame(loaded_scaler_Y.transform(Y),
                      columns=['drop_length', 'adv', 'rec', 'avg_vel', 'width', 'y'])
-    fig, axs = plt.subplots(figsize=(4, 4), nrows=3, ncols=2)
+    fig, axs = plt.subplots(figsize=(3, 3), nrows=3, ncols=2)
     for i, feature in enumerate(['drop_length', 'adv', 'rec', 'avg_vel', 'width', 'y']):
         ax = axs[int(i / 2), i % 2]
         x = Y.loc[:, feature]
